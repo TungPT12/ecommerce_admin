@@ -1,0 +1,57 @@
+.dashboard-transactions {
+    border: 1px solid #cfcfcf;
+    border-radius: 4px;
+}
+
+
+.dashboard-transactions table tr {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 13px;
+    border-bottom: 1px solid #cfcfcf;
+}
+
+.dashboard-transactions table th span {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.dashboard-transactions table th span {
+    display: flex;
+    width: 100%;
+    height: 1rem;
+    border-right: 1px solid #c1c1c1;
+    justify-content: flex-start;
+}
+
+.dashboard-transactions table th {
+    padding-top: 1rem;
+    font-weight: 400;
+    padding-bottom: 1rem;
+}
+
+.dashboard-transactions table td {
+    word-break: break-all;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.paging {
+    font-size: 14px;
+    border-top: 1px solid #c1c1c1;
+}
+
+.chevron-icon {
+    color: #b6b4b4;
+}
+
+.chevron-icon:hover {
+    cursor: pointer;
+}
+
+.title {
+    color: #00000070;
+    font-weight: 500;
+}
