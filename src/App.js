@@ -19,7 +19,7 @@ import AddHotel from "./pages/Hotel/AddHotel/AddHotel";
 import AddRoom from "./pages/Rooms/AddRoom/AddRoom";
 import Area from "./pages/Area/Area";
 import { useEffect } from "react";
-import { checkAccessToken } from "./apis/auth/authn";
+import { checkAccessToken } from "./apis/authn";
 import AddUser from "./pages/User/AddUser/AddUser";
 import AddArea from "./pages/Area/AddArea/AddArea";
 import Type from "./pages/Type/Type";
@@ -31,11 +31,12 @@ import UpdateRoom from "./pages/Rooms/UpdateRoom/UpdateRoom";
 import UpdateType from "./pages/Type/UpdateType/UpdateType";
 import Category from "./pages/Category/Category";
 import AddCategory from "./pages/Category/AddCategory/AddCategory";
+import SigninPage from "./pages/SigninPage/SigninPage";
 const adminRouters = [
   {
     name: "Admin",
     path: '/',
-    element: <Dashboard />
+    element: <Category />
   },
   {
     name: "Admin",
@@ -57,86 +58,86 @@ const adminRouters = [
     path: '/admin/category/add',
     element: <AddCategory />
   },
-  {
-    name: "Hotel",
-    path: '/admin/hotels',
-    element: <Hotel />
-  },
-  {
-    name: "Hotel",
-    path: '/admin/hotel/add',
-    element: <AddHotel />
-  },
-  {
-    name: "Hotel",
-    path: '/admin/hotel/edit/:id',
-    element: <UpdateHotel />
-  },
-  {
-    name: "Rooms",
-    path: '/admin/rooms',
-    element: <Rooms />
-  },
-  {
-    name: "Rooms",
-    path: '/admin/room/add',
-    element: <AddRoom />
-  },
-  {
-    name: "Rooms",
-    path: '/admin/room/edit/:id',
-    element: <UpdateRoom />
-  },
-  {
-    name: "Transactions",
-    path: '/admin/transactions',
-    element: <Transactions />
+  // {
+  //   name: "Hotel",
+  //   path: '/admin/hotels',
+  //   element: <Hotel />
+  // },
+  // {
+  //   name: "Hotel",
+  //   path: '/admin/hotel/add',
+  //   element: <AddHotel />
+  // },
+  // {
+  //   name: "Hotel",
+  //   path: '/admin/hotel/edit/:id',
+  //   element: <UpdateHotel />
+  // },
+  // {
+  //   name: "Rooms",
+  //   path: '/admin/rooms',
+  //   element: <Rooms />
+  // },
+  // {
+  //   name: "Rooms",
+  //   path: '/admin/room/add',
+  //   element: <AddRoom />
+  // },
+  // {
+  //   name: "Rooms",
+  //   path: '/admin/room/edit/:id',
+  //   element: <UpdateRoom />
+  // },
+  // {
+  //   name: "Transactions",
+  //   path: '/admin/transactions',
+  //   element: <Transactions />
 
-  },
-  {
-    name: "Area",
-    path: '/admin/areas',
-    element: <Area />
+  // },
+  // {
+  //   name: "Area",
+  //   path: '/admin/areas',
+  //   element: <Area />
 
-  },
-  {
-    name: "Area",
-    path: '/admin/area/edit/:id',
-    element: <UpdateArea />
+  // },
+  // {
+  //   name: "Area",
+  //   path: '/admin/area/edit/:id',
+  //   element: <UpdateArea />
 
-  },
-  {
-    name: "Area",
-    path: '/admin/area/add',
-    element: <AddArea />
-  },
-  {
-    name: "Users",
-    path: '/admin/users',
-    element: <Users />
-  },
-  {
-    name: "Users",
-    path: '/admin/user/add',
-    element: <AddUser />
+  // },
+  // {
+  //   name: "Area",
+  //   path: '/admin/area/add',
+  //   element: <AddArea />
+  // },
+  // {
+  //   name: "Users",
+  //   path: '/admin/users',
+  //   element: <Users />
+  // },
+  // {
+  //   name: "Users",
+  //   path: '/admin/user/add',
+  //   element: <AddUser />
 
-  },
-  {
-    name: "Types",
-    path: '/admin/types',
-    element: <Type />
+  // },
+  // {
+  //   name: "Types",
+  //   path: '/admin/types',
+  //   element: <Type />
 
-  },
-  {
-    name: "Types",
-    path: '/admin/type/add',
-    element: <AddType />
-  },
-  {
-    name: "Types",
-    path: '/admin/type/edit/:id',
-    element: <UpdateType />
-  },
+  // },
+  // {
+  //   name: "Types",
+  //   path: '/admin/type/add',
+  //   element: <AddType />
+  // },
+  // {
+  //   name: "Types",
+  //   path: '/admin/type/edit/:id',
+  //   element: <UpdateType />
+  // },
 ]
 
 function App() {
@@ -148,7 +149,7 @@ function App() {
       return <Route key={router.path} path={router.path} element={
         isAuthn ? <MainPage>
           {router.element}
-        </MainPage> : <Login />
+        </MainPage> : <SigninPage />
       } />
     })
   }
@@ -180,7 +181,7 @@ function App() {
       /> : <></>}
       <Routes>
         {renderRouter(adminRouters, isAuthn)}
-        <Route path='/admin/login' element={<Login />} />
+        <Route path='/admin/signin' element=<SigninPage /> />
       </Routes>
     </BrowserRouter>
   );

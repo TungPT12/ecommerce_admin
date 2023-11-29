@@ -1,36 +1,62 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Category.module.css'
 import { Card } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faTags } from '@fortawesome/free-solid-svg-icons';
-import { deleteAreaAdminApi, getAreasAdminApi } from '../../apis/area';
 import { useSelector } from 'react-redux';
 import UpdateButton from '../../components/UpdateButton/UpdateButton';
 import DeleteButton from '../../components/DeleteButton/DeleteButton';
+import { getCategoriesAdminApi } from '../../apis/category';
 
 function Category() {
     const { token } = useSelector(state => state.authn)
-    const [areas, setAreas] = useState([]);
+    const navigate = useNavigate();
+    const [categories, setCategories] = useState([]);
     const [totalPage, setTotalPage] = useState(1)
     const [page, setPage] = useState(1)
     const loadAreas = () => {
-        getAreasAdminApi(token, page).then((response) => {
+        getCategoriesAdminApi(token, page).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
             if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
+                throw new Error(response.data.message);
             }
-            if (response.status !== 200) {
-                throw new Error('Something wrong');
-            }
-            return response.data;
+            return response.data
         }).then((data) => {
             setTotalPage(data.total_pages);
-            setAreas(data.results)
+            setCategories(data.results)
         }).catch((error) => {
             console.log(error)
-            alert(error.message)
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/login')
+            }
         })
+        // getAreasAdminApi(token, page).then((response) => {
+        //     if (response.status === 403 || response.status === 401) {
+        //         // localStorage.removeItem('bookingAdminToken');
+        //         // window.location.href = '/admin/login'
+        //     }
+        //     if (response.status !== 200) {
+        //         throw new Error('Something wrong');
+        //     }
+        //     return response.data;
+        // }).then((data) => {
+        //     setTotalPage(data.total_pages);
+        //     setAreas(data.results)
+        // }).catch((error) => {
+        //     console.log(error)
+        //     alert(error.message)
+        // })
     }
 
     useEffect(() => {
@@ -40,48 +66,55 @@ function Category() {
 
 
     const deleteArea = (id) => {
-        deleteAreaAdminApi(token, id).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-        }).then(() => {
-            let tmpAreas = areas;
-            const position = tmpAreas.findIndex((area) => {
-                return id === area._id;
-            })
-            tmpAreas.splice(position, 1);
-            setAreas([...tmpAreas])
-            alert('Successfully!')
-        }).catch((error) => {
-            loadAreas();
-            console.log(error)
-            alert(error.message)
-        })
+        // deleteAreaAdminApi(token, id).then((response) => {
+        //     if (response.status === 403 || response.status === 401) {
+        //         localStorage.removeItem('bookingAdminToken');
+        //         window.location.href = '/admin/login'
+        //     }
+        //     if (response.status !== 200) {
+        //         throw new Error(response.data.message);
+        //     }
+        // }).then(() => {
+        //     let tmpAreas = areas;
+        //     const position = tmpAreas.findIndex((area) => {
+        //         return id === area._id;
+        //     })
+        //     tmpAreas.splice(position, 1);
+        //     setAreas([...tmpAreas])
+        //     alert('Successfully!')
+        // }).catch((error) => {
+        //     loadAreas();
+        //     console.log(error)
+        //     alert(error.message)
+        // })
     }
-    const renderAreas = (areas) => {
-        return areas.map((area) => {
-            return <tr className='w-100'>
-                <td className='f-1 text-center'>
-                    <input type="checkbox" />
-                </td>
-                <td className='f-3 ps-3'>{area._id}</td>
-                <td className='f-3 ps-3 text-capitalize'>{area.name}</td>
-                <td className='f-3 ps-3 text-capitalize'>
-                    <img className="w-25" alt={area.name} src={area.backgroundImage} />
-                </td>
-                <td className='f-1 ps-3'>
-                    <button onClick={() => {
-                        deleteArea(area._id)
-                    }} className={`${styles['delete-btn']}`}>Delete</button>
-                </td>
-                <td className='f-1 ps-3'>
-                    <Link to={`/admin/area/edit/${area._id}`} className={`${styles['delete-btn']} text-decoration-none px-2`}>Edit</Link>
-                </td>
-            </tr>
+    const renderCategories = (categories) => {
+        return categories.map((category, index) => {
+            if (index % 2 === 0) {
+                return <div className={`${styles['body-row']} d-flex`}>
+                    <div className={`${styles['id']} f-4  ps-3 text-ellipsis`}>{category._id}</div>
+                    <div className={`${styles['name']} f-4 text-capitalize ps-3 text-ellipsis`}>{category.name}</div>
+                    <div className={`${styles['image']} f-2 text-uppercase ps-3`}>
+                        <img className="w-50" alt={category.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${category.image}`} />
+                    </div>
+                    <div className='f-2 text-capitalize ps-3'>
+                        <UpdateButton />
+                        <DeleteButton className="ms-1" />
+                    </div>
+                </div>
+            } else {
+                return <div className={`${styles['body-row']} d-flex bg-row-even`}>
+                    <div className={`${styles['id']} f-4  ps-3 text-ellipsis`}>{category._id}</div>
+                    <div className={`${styles['name']} f-4 text-capitalize ps-3 text-ellipsis`}>{category.name}</div>
+                    <div className={`${styles['image']} f-2 text-uppercase ps-3`}>
+                        <img className="w-50" alt={category.name} src={category.image} />
+                    </div>
+                    <div className='f-2 text-capitalize ps-3'>
+                        <UpdateButton />
+                        <DeleteButton className="ms-1" />
+                    </div>
+                </div>
+            }
         })
     }
 
@@ -98,34 +131,13 @@ function Category() {
                         <div className={`${styles['header-table']}`}>
                             <div className={`${styles['header-row']} d-flex`}>
                                 <div className='f-4 text-uppercase ps-3 text-ellipsis'>id</div>
-                                <div className='f-4 text-capitalize ps-3 text-ellipsis'> name</div>
-                                <div className='f-2 text-capitalize ps-3'> image</div>
-                                <div className='f-2 text-capitalize ps-3'> Edit</div>
+                                <div className='f-4 text-capitalize ps-3 text-ellipsis'>name</div>
+                                <div className='f-2 text-capitalize ps-3'>image</div>
+                                <div className='f-2 text-capitalize ps-3'>Edit</div>
                             </div>
                         </div>
                         <div className={`${styles['body-table']}`}>
-                            <div className={`${styles['body-row']} d-flex bg-row-even`}>
-                                <div className={`${styles['id']} f-4  ps-3 text-ellipsis`}>saldaskjdsajk</div>
-                                <div className={`${styles['name']} f-4 text-capitalize ps-3 text-ellipsis`}>iphone</div>
-                                <div className={`${styles['image']} f-2 text-uppercase ps-3`}>
-                                    <img className="w-50" alt="" src="https://firebasestorage.googleapis.com/v0/b/authen-demo-tungpt.appspot.com/o/product_3.png?alt=media&token=db8a6b33-561f-4027-b70d-d4b967b581b3" />
-                                </div>
-                                <div className='f-2 text-capitalize ps-3'>
-                                    <UpdateButton />
-                                    <DeleteButton className="ms-1" />
-                                </div>
-                            </div>
-                            <div className={`${styles['body-row']} d-flex `}>
-                                <div className={`${styles['id']} f-4  ps-3 text-ellipsis`}>saldaskjdsajk</div>
-                                <div className={`${styles['name']} f-4 text-capitalize ps-3 text-ellipsis`}>iphone</div>
-                                <div className={`${styles['image']} f-2 text-uppercase ps-3`}>
-                                    <img className="w-50" alt="" src="https://firebasestorage.googleapis.com/v0/b/authen-demo-tungpt.appspot.com/o/product_3.png?alt=media&token=db8a6b33-561f-4027-b70d-d4b967b581b3" />
-                                </div>
-                                <div className='f-2 text-capitalize ps-3'>
-                                    <UpdateButton />
-                                    <DeleteButton className="ms-1" />
-                                </div>
-                            </div>
+                            {renderCategories(categories)}
                         </div>
                         <div className={`${styles['paging']} mt-5 d-flex justify-content-end px-5 py-3`}>
                             <span className='me-4'>{page}-{totalPage} of {totalPage}</span>

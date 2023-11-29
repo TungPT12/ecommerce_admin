@@ -1,9 +1,9 @@
-import axiosAdminInstance from "../../configs/axios/admin";
+import axiosAdminInstance from "../configs/axios/admin";
 
-const login = async (username, password) => {
+const signin = async (email, password) => {
     try {
-        const response = await axiosAdminInstance.post('/login', {
-            username: username,
+        const response = await axiosAdminInstance.post('/signin', {
+            email: email,
             password: password
         });
         return response
@@ -24,6 +24,6 @@ const checkAccessToken = async (token) => {
 }
 
 export {
-    login,
+    signin,
     checkAccessToken
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { authnAction } from '../../stores/slice/authn';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../apis/auth/authn';
+// import { login } from '../../apis/authn';
 
 import styles from './Login.module.css';
 import { Col, Row } from 'react-bootstrap';
@@ -23,23 +23,23 @@ function Login() {
     }, [isAuthn])
 
     const onSubmitLogin = async (e) => {
-        try {
-            e.preventDefault();
-            const response = await login(username, password);
-            if (response.status === 401) {
-                setWrongUser(true);
-                return;
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-            const data = response.data;
-            dispatch(authnAction.login(data));
-            navigate('/')
-        } catch (error) {
-            console.log(error);
-            alert(error.message);
-        }
+        // try {
+        //     e.preventDefault();
+        //     const response = await login(username, password);
+        //     if (response.status === 401) {
+        //         setWrongUser(true);
+        //         return;
+        //     }
+        //     if (response.status !== 200) {
+        //         throw new Error(response.data.message);
+        //     }
+        //     const data = response.data;
+        //     dispatch(authnAction.login(data));
+        //     navigate('/')
+        // } catch (error) {
+        //     console.log(error);
+        //     alert(error.message);
+        // }
     }
 
     return (
