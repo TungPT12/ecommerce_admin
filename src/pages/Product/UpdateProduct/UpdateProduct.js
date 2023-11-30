@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
-import styles from './UpdateHotel.module.css';
+import styles from './UpdateProduct.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { isEmptyInput, isEmptySelect, isShowWarning } from '../../../utils/input';
@@ -14,7 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner';
 import alertMessage from '../../../utils/warningMessage';
 
-function UpdateHotel() {
+function UpdateProduct() {
     const navigate = useNavigate();
     const { token } = useSelector(state => state.authn);
     const [isLoading, setIsLoading] = useState(true)
@@ -300,4 +300,4 @@ function UpdateHotel() {
     );
 }
 
-export default UpdateHotel;
+export default UpdateProduct;

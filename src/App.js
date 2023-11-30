@@ -17,6 +17,8 @@ import AddCategory from "./pages/Category/AddCategory/AddCategory";
 import SigninPage from "./pages/SigninPage/SigninPage";
 import { checkIsLoginApi } from "./apis/authn";
 import UpdateCategory from "./pages/Category/UpdateCategory/UpdateCategory";
+import Product from "./pages/Product/Product";
+import AddProduct from "./pages/Product/AddProduct/AddProduct";
 const adminRouters = [
   {
     name: "Admin",
@@ -48,16 +50,16 @@ const adminRouters = [
     path: '/admin/category/edit/:id',
     element: <UpdateCategory />
   },
-  // {
-  //   name: "Hotel",
-  //   path: '/admin/hotels',
-  //   element: <Hotel />
-  // },
-  // {
-  //   name: "Hotel",
-  //   path: '/admin/hotel/add',
-  //   element: <AddHotel />
-  // },
+  {
+    name: "Product",
+    path: '/admin/products',
+    element: <Product />
+  },
+  {
+    name: "Hotel",
+    path: '/admin/product/add',
+    element: <AddProduct />
+  },
   // {
   //   name: "Hotel",
   //   path: '/admin/hotel/edit/:id',

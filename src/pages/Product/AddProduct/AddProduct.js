@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
-import styles from './AddHotel.module.css';
+import styles from './AddProduct.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { isEmptyInput, isEmptySelect, isShowWarning } from '../../../utils/input';
 import useInput from '../../../hook/use-input';
-import uploadImage from '../../../utils/uploadImage';
-import { createHotelAdminApi } from '../../../apis/hotel';
-import { getAreasAdminApi } from '../../../apis/area';
+import { uploadImages } from '../../../utils/uploadImage';
 import { useSelector } from 'react-redux';
-import { getTypesAdminApi } from '../../../apis/type';
 import alertMessage from '../../../utils/warningMessage';
 
-function AddHotel() {
+function AddProduct() {
     const { token } = useSelector(state => state.authn)
     const [images, setImages] = useState([])
     const [featured, setFeature] = useState(false)
@@ -82,70 +79,70 @@ function AddHotel() {
             photos: images,
             desc: description.trim()
         }
-        createHotelAdminApi(token, hotel).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-            alert('Successfully')
-        }).then(() => {
-            resetInputAddress();
-            resetInputName();
-            resetInputArea();
-            resetInputTitle();
-            resetInputType();
-            resetInputDistance();
-            setFeature(false);
-            setImages([]);
-            setDescription('')
-        }).catch((error) => {
-            console.log(error)
-            alert('Fail')
-        })
+        // createHotelAdminApi(token, hotel).then((response) => {
+        //     if (response.status === 403 || response.status === 401) {
+        //         localStorage.removeItem('bookingAdminToken');
+        //         window.location.href = '/admin/login'
+        //     }
+        //     if (response.status !== 200) {
+        //         throw new Error(response.data.message);
+        //     }
+        //     alert('Successfully')
+        // }).then(() => {
+        //     resetInputAddress();
+        //     resetInputName();
+        //     resetInputArea();
+        //     resetInputTitle();
+        //     resetInputType();
+        //     resetInputDistance();
+        //     setFeature(false);
+        //     setImages([]);
+        //     setDescription('')
+        // }).catch((error) => {
+        //     console.log(error)
+        //     alert('Fail')
+        // })
     }
 
     const loadArea = () => {
-        getAreasAdminApi(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-            setArea(response.data.results)
-        }).catch((error) => {
-            console.log(error)
-            alert(error.message);
-        })
+        // getAreasAdminApi(token).then((response) => {
+        //     if (response.status === 403 || response.status === 401) {
+        //         localStorage.removeItem('bookingAdminToken');
+        //         window.location.href = '/admin/login'
+        //     }
+        //     if (response.status !== 200) {
+        //         throw new Error(response.data.message);
+        //     }
+        //     setArea(response.data.results)
+        // }).catch((error) => {
+        //     console.log(error)
+        //     alert(error.message);
+        // })
     }
     const loadType = () => {
-        getTypesAdminApi(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-            setTypes(response.data.results)
-        }).catch((error) => {
-            console.log(error)
-            alert(error.message);
-        })
+        // getTypesAdminApi(token).then((response) => {
+        //     if (response.status === 403 || response.status === 401) {
+        //         localStorage.removeItem('bookingAdminToken');
+        //         window.location.href = '/admin/login'
+        //     }
+        //     if (response.status !== 200) {
+        //         throw new Error(response.data.message);
+        //     }
+        //     setTypes(response.data.results)
+        // }).catch((error) => {
+        //     console.log(error)
+        //     alert(error.message);
+        // })
     }
 
-    useEffect(() => {
-        loadArea();
-        loadType();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    // useEffect(() => {
+    //     loadArea();
+    //     loadType();
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [])
 
     const chooseImage = async (image) => {
-        const data = await uploadImage(image);
+        const data = await uploadImages(image);
         if (data) {
             const urlImage = data.urlImage;
             setImages([...images, urlImage]);
@@ -273,4 +270,4 @@ function AddHotel() {
     );
 }
 
-export default AddHotel;
+export default AddProduct;

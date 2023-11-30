@@ -1,4 +1,4 @@
-import { faShop, faUser, faHouse, faDashboard, faDollar, faArrowRightFromBracket, faCity, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faBox, faUser, faHouse, faDashboard, faDollar, faArrowRightFromBracket, faCity, faTags } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styles from './Navbar.module.css';
@@ -41,12 +41,12 @@ function Navbar() {
                     <FontAwesomeIcon icon={faUser} className={`${styles['icon']} f-1`} />
                     <span className={`${styles['tab-name']} text-capitalize f-5`}>users</span>
                 </NavLink>
-                <NavLink to="/admin/hotels" className={({ isActive }) => {
+                <NavLink to="/admin/products" className={({ isActive }) => {
                     let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
                     return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
                 }}>
-                    <FontAwesomeIcon icon={faShop} className={`${styles['icon']} f-1`} />
-                    <span className={`${styles['tab-name']} text-capitalize f-5`}>hotels</span>
+                    <FontAwesomeIcon icon={faBox} className={`${styles['icon']} f-1`} />
+                    <span className={`${styles['tab-name']} text-capitalize f-5`}>Products</span>
                 </NavLink>
                 <NavLink to="/admin/rooms" className={({ isActive }) => {
                     let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;

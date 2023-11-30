@@ -1,9 +1,9 @@
 import axiosAdminInstance from "../configs/axios/admin";
 import setHeaders from "../utils/setHeaders";
 
-const getAllHotelAdminApi = async (token, page) => {
+const getProductsAdminApi = async (token) => {
     try {
-        const response = await axiosAdminInstance.get(`/hotels?page=${page}`, setHeaders(token));
+        const response = await axiosAdminInstance.get(`/products`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
@@ -67,7 +67,7 @@ const deleteHotelByIdAdminApi = async (token, id) => {
 
 
 export {
-    getAllHotelAdminApi,
+    getProductsAdminApi,
     createHotelAdminApi,
     disableHotelAdminApi,
     getHotelByIdAdminApi,

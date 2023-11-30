@@ -42,7 +42,6 @@ function Category() {
             setTotalPage(data.total_pages);
             setCategories(data.results)
         }).catch((error) => {
-            console.log(error)
             if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
                 navigate(error.message)
             } else {
@@ -79,6 +78,7 @@ function Category() {
             }
         })
     }
+
 
     useEffect(() => {
         if (!isAuthn) {
@@ -124,46 +124,27 @@ function Category() {
     }
     const renderCategories = (categories) => {
         return categories.map((category, index) => {
-            if (index % 2 === 0) {
-                return <div key={category._id} className={`${styles['body-row']} d-flex`}>
-                    <div className={`${styles['id']} f-3  ps-3 text-ellipsis`}>{category._id}</div>
-                    <div className={`${styles['name']} f-3 text-capitalize ps-3 text-ellipsis`}>{category.name}</div>
-                    <div className={`${styles['image']} f-2 text-uppercase ps-3`}>
-                        <img className="w-50" alt={category.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${category.image}`} />
-                    </div>
-                    <div className='f-2 text-capitalize ps-3'>
-                        <UpdateButton
-                            link={`/admin/category/edit/${category._id}`}
-                        />
-                        <DeleteButton
-                            className="ms-1"
-                            onclick={() => {
-                                setIsLoadingSpinnerModal(true);
-                                deleteCategory(category._id)
-                            }}
-                        />
-                    </div>
+            return <div key={category._id} className={`${styles['body-row']}  ${index % 2 === 0 ? 'bg-row-even' : ''} d-flex`}>
+                <div className={`${styles['id']} f-3  ps-3 text-ellipsis`}>
+                    <p className="text-ellipsis m-0">{category._id}</p>
                 </div>
-            } else {
-                return <div key={category._id} className={`${styles['body-row']} d-flex bg-row-even`}>
-                    <div className={`${styles['id']} f-3  ps-3 text-ellipsis`}>{category._id}</div>
-                    <div className={`${styles['name']} f-3 text-capitalize ps-3 text-ellipsis`}>{category.name}</div>
-                    <div className={`${styles['image']} f-2 text-uppercase ps-3`}>
-                        <img className="w-50" alt={category.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${category.image}`} />
-                    </div>
-                    <div className='f-2 text-capitalize ps-3'>
-                        <UpdateButton
-                            link={`/admin/category/edit/${category._id}`}
-                        />
-                        <DeleteButton
-                            onclick={() => {
-                                setIsLoadingSpinnerModal(true);
-                                deleteCategory(category._id)
-                            }}
-                            className="ms-1" />
-                    </div>
+                <div className={`${styles['name']} f-3 text-capitalize ps-3 text-ellipsis`}>{category.name}</div>
+                <div className={`${styles['image']} f-2 text-uppercase ps-3`}>
+                    <img className="w-50" alt={category.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${category.image}`} />
                 </div>
-            }
+                <div className='f-2 text-capitalize ps-3'>
+                    <UpdateButton
+                        link={`/admin/category/edit/${category._id}`}
+                    />
+                    <DeleteButton
+                        className="ms-1"
+                        onclick={() => {
+                            setIsLoadingSpinnerModal(true);
+                            deleteCategory(category._id)
+                        }}
+                    />
+                </div>
+            </div>
         })
     }
 
@@ -177,8 +158,8 @@ function Category() {
                     <div className='px-4 pb-3'>
                         <div className='d-flex justify-content-between py-2 align-items-center'>
                             <h3 className={`${styles['title']} pe-3 pt-3 pb-2 mb-0 text-capitalize`}>Products</h3>
-                            <Link to="/admin/category/add" className={`${styles['btn-add_area']} text-decoration-none`}>Add new </Link>
-                        </div >
+                            <Link to="/admin/category/add" className={`${styles['btn-add_category']} text-decoration-none`}>Add new </Link>
+                        </div>
                         <div className={`${styles['table']}`}>
                             <div className={`${styles['header-table']}`}>
                                 <div className={`${styles['header-row']} d-flex`}>
