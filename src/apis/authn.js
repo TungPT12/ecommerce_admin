@@ -12,11 +12,9 @@ const signin = async (email, password) => {
     }
 }
 
-const checkAccessToken = async (token) => {
+const checkIsLoginApi = async () => {
     try {
-        const response = await axiosAdminInstance.post('/access-token', {
-            token: token,
-        });
+        const response = await axiosAdminInstance.post('/is-login')
         return response
     } catch (error) {
         return error.response;
@@ -25,5 +23,5 @@ const checkAccessToken = async (token) => {
 
 export {
     signin,
-    checkAccessToken
+    checkIsLoginApi
 }

@@ -1,10 +1,12 @@
-import uploadImageApi from "../apis/uploadImage";
+import { uploadImagesApi, uploadAnImagesApi } from "../apis/uploadImage";
 
-const uploadImage = async (image) => {
+const uploadImages = async (images) => {
     try {
         const formData = new FormData();
-        formData.append('image', image);
-        const response = await uploadImageApi(formData);
+        images.forEach(image => {
+            formData.append('images', image);
+        });
+        const response = await uploadImagesApi(formData);
         if (response.status !== 200) {
             throw new Error('loi')
         }
@@ -15,4 +17,22 @@ const uploadImage = async (image) => {
     }
 }
 
-export default uploadImage;
+const uploadAnImage = async (image) => {
+    try {
+        const formData = new FormData();
+        formData.append('image', image);
+        const response = await uploadAnImagesApi(formData);
+        if (response.status !== 200) {
+            throw new Error('loi')
+        }
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
+
+export {
+    uploadImages,
+    uploadAnImage
+};

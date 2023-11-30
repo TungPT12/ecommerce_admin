@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import styles from './AddCategory.module.css';
 import useInput from '../../../hook/use-input';
-import uploadImage from '../../../utils/uploadImage';
+import { uploadAnImage } from '../../../utils/uploadImage';
 import { Card } from 'react-bootstrap';
 import { isEmptyInput, isShowWarning } from '../../../utils/input';
-import { createAreaAdminApi } from '../../../apis/area';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import alertMessage from '../../../utils/warningMessage';
+import { createCategoryAdminApi } from '../../../apis/category';
 
 function AddCategory() {
+    const navigate = useNavigate();
     const { token } = useSelector(state => state.authn)
-    const [imageArea, setImageArea] = useState('')
+    const [image, setImage] = useState('');
+    const [errorName, setErrorTitle] = useState("Please enter category name!");
+    const [errorImage, setErrorImage] = useState("");
     const {
         isValid: isValidName,
         input: inputName,
@@ -20,42 +24,65 @@ function AddCategory() {
         resetInput: resetInputName,
     } = useInput(isEmptyInput, '');
 
-    const isValidSubmit = isValidName
+    const isValidSubmit = isValidName && image
 
     const onSubmit = () => {
-        const area = {
+        const category = {
             name: inputName.trim(),
-            backgroundImage: imageArea,
+            image: image,
         }
-        createAreaAdminApi(token, area).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
+        createCategoryAdminApi(token, category).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
             }
-            if (response.status !== 200) {
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 422) {
+                response.data.errors.forEach((error) => {
+                    if (error.path === 'title') {
+                        setErrorTitle(error.msg)
+                    }
+                    if (error.path === 'image') {
+                        setErrorImage(error.msg)
+                    }
+                    throw new Error('422')
+                })
+            }
+            if (response.status === 403 || response.status === 401) {
                 throw new Error(response.data.message);
             }
-            alert('Successfully')
+            alert('Successfully');
+            return
         }).then(() => {
             resetInputName();
-            setImageArea('');
+            setImage('');
+            setErrorImage('')
         }).catch((error) => {
-            console.log(error)
-            alert('Fail')
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else if (error.message === '422') {
+                navigate('/login')
+            } else {
+                navigate('/login')
+            }
         })
     }
 
     const chooseImage = async (image) => {
-        const data = await uploadImage(image);
+        const data = await uploadAnImage(image);
         if (data) {
-            const urlImage = data.urlImage;
-            setImageArea(urlImage);
+            const urlImage = data.image;
+            setImage(urlImage);
         }
     }
 
     const renderImage = (image) => {
         return <div key={image} className={`${styles['image-wrapper']} position-relative w-100 d-flex justify-content-center`}>
-            <img src={image} className='h-100' alt='' />
+            <img src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${image}`} className='h-100' alt='' />
         </div>
     }
 
@@ -71,21 +98,23 @@ function AddCategory() {
                         <input placeholder='Category' value={inputName} onBlur={onTouchedName} onChange={(e) => {
                             setInputName(e.target.value)
                         }} className={`${styles['input-text']}`} />
-                        {isShowWarning(isValidName, isTouchName) ? alertMessage("Please enter category name!") : <></>}
+                        {isShowWarning(isValidName, isTouchName) ? alertMessage(errorName) : <></>}
                     </div>
                     <div>
                         <p>image</p>
-                        {imageArea ? <div className={`${styles['list-image']} d-grid position-relative px-2 mb-2`}>
-                            {/* {renderImage(imageArea)} */}
+                        {image ? <div className={`${styles['list-image']} d-grid position-relative px-2 mb-2`}>
+                            {renderImage(image)}
                         </div> : <></>}
                         <input onChange={(e) => {
                             chooseImage(e.target.files[0]);
                             e.target.value = null;
                         }} type='file' className={`ps-2`} />
+                        {errorImage ? alertMessage(errorImage) : <></>}
                     </div>
                 </div>
                 <button onClick={isValidSubmit ? onSubmit : () => {
                     onTouchedName(true);
+                    setErrorImage('Invalid image')
                 }} className={`${styles['btn-submit']} mt-4`}>Create</button>
             </Card>
 

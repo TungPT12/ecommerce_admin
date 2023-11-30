@@ -3,42 +3,42 @@ import setHeaders from "../utils/setHeaders";
 
 const getCategoriesAdminApi = async (token, page) => {
     try {
-        const response = await axiosAdminInstance.get(`categories?page=${page}`, setHeaders(token));
+        const response = await axiosAdminInstance.get(`/categories?page=${page}`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
     }
 }
-const getAreaByIdAdminApi = async (token, id) => {
+const getCategoryByIdAdminApi = async (token, id) => {
     try {
-        const response = await axiosAdminInstance.get(`area/${id}`, setHeaders(token));
-        return response;
-    } catch (error) {
-        return error.response;
-    }
-}
-
-const createAreaAdminApi = async (token, area) => {
-    try {
-        const response = await axiosAdminInstance.post('/area', area, setHeaders(token));
+        const response = await axiosAdminInstance.get(`/category/${id}`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
     }
 }
 
-const updateAreaByIdAdminApi = async (token, area, id) => {
+const createCategoryAdminApi = async (token, category) => {
     try {
-        const response = await axiosAdminInstance.put(`/area/${id}`, area, setHeaders(token));
+        const response = await axiosAdminInstance.post('/category', category, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
     }
 }
 
-const deleteAreaAdminApi = async (token, id) => {
+const updateCategoryByIdAdminApi = async (token, category, id) => {
     try {
-        const response = await axiosAdminInstance.delete(`/area/${id}`, setHeaders(token));
+        const response = await axiosAdminInstance.put(`/category/${id}`, category, setHeaders(token));
+        return response;
+    } catch (error) {
+        return error.response;
+    }
+}
+
+const deleteCategoryAdminApi = async (token, id) => {
+    try {
+        const response = await axiosAdminInstance.delete(`/category/${id}`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
@@ -47,8 +47,8 @@ const deleteAreaAdminApi = async (token, id) => {
 
 export {
     getCategoriesAdminApi,
-    createAreaAdminApi,
-    getAreaByIdAdminApi,
-    updateAreaByIdAdminApi,
-    deleteAreaAdminApi
+    createCategoryAdminApi,
+    getCategoryByIdAdminApi,
+    updateCategoryByIdAdminApi,
+    deleteCategoryAdminApi
 }

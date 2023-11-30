@@ -7,31 +7,16 @@ import { useDispatch, useSelector } from "react-redux";
 
 
 import './index.css'
-import Login from "./pages/Login/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Header from "./components/Header/Header";
 import MainPage from "./pages/MainPage/MainPage";
-import Hotel from "./pages/Hotel/Hotel";
-import Transactions from "./pages/Transactions/Transactions";
-import Rooms from "./pages/Rooms/Rooms";
-import Users from "./pages/User/Users";
-import AddHotel from "./pages/Hotel/AddHotel/AddHotel";
-import AddRoom from "./pages/Rooms/AddRoom/AddRoom";
-import Area from "./pages/Area/Area";
 import { useEffect } from "react";
-import { checkAccessToken } from "./apis/authn";
-import AddUser from "./pages/User/AddUser/AddUser";
-import AddArea from "./pages/Area/AddArea/AddArea";
-import Type from "./pages/Type/Type";
-import AddType from "./pages/Type/AddType/AddType";
 import { authnAction } from "./stores/slice/authn";
-import UpdateArea from "./pages/Area/UpdateArea/UpdateArea";
-import UpdateHotel from "./pages/Hotel/UpdateHotel/UpdateHotel";
-import UpdateRoom from "./pages/Rooms/UpdateRoom/UpdateRoom";
-import UpdateType from "./pages/Type/UpdateType/UpdateType";
 import Category from "./pages/Category/Category";
 import AddCategory from "./pages/Category/AddCategory/AddCategory";
 import SigninPage from "./pages/SigninPage/SigninPage";
+import { checkIsLoginApi } from "./apis/authn";
+import UpdateCategory from "./pages/Category/UpdateCategory/UpdateCategory";
 const adminRouters = [
   {
     name: "Admin",
@@ -57,6 +42,11 @@ const adminRouters = [
     name: "Category",
     path: '/admin/category/add',
     element: <AddCategory />
+  },
+  {
+    name: "Category",
+    path: '/admin/category/edit/:id',
+    element: <UpdateCategory />
   },
   // {
   //   name: "Hotel",
@@ -142,36 +132,15 @@ const adminRouters = [
 
 function App() {
   const { isAuthn, username, email, avatar } = useSelector(state => state.authn);
-  const dispatch = useDispatch();
   const renderRouter = (listRouter) => {
     return listRouter.map((router) => {
-      // return <Route key={router.path} path={router.path} element=<MainPage>{router.element}</MainPage> />
-      return <Route key={router.path} path={router.path} element={
-        isAuthn ? <MainPage>
-          {router.element}
-        </MainPage> : <SigninPage />
+      return <Route key={router.path} path={router.path} element={<MainPage>
+        {router.element}
+      </MainPage>
       } />
     })
   }
-  useEffect(() => {
-    const token = localStorage.getItem('bookingAdminToken');
-    if (!token) {
-      return;
-    }
-    checkAccessToken(token).then((response) => {
-      if (response.status === 403 || response.status === 401) {
-        localStorage.removeItem('bookingAdminToken');
-        window.location.href = '/admin/login'
-      }
-      if (response.status !== 200) {
-        throw new Error('Something wrong');
-      }
-      dispatch(authnAction.setUser(response.data));
-    }).catch((error) => {
-      console.log(error)
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+
   return (
     <BrowserRouter>
       {isAuthn ? <Header

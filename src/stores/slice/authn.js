@@ -1,7 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initAuthn = {
-    isAuthn: false
+    token: '',
+    _id: '',
+    email: '',
+    fullName: '',
+    isAdmin: '',
+    phoneNumber: '',
+    username: '',
+    avatar: '',
+    isAuthn: false,
 }
 
 const authnSlice = createSlice({
@@ -10,7 +18,6 @@ const authnSlice = createSlice({
     reducers: {
         login(state, payload) {
             const user = payload.payload;
-            localStorage.setItem('bookingAdminToken', user.token);
             state.token = user.token;
             state.isAuthn = true;
             state._id = user._id;
@@ -22,12 +29,18 @@ const authnSlice = createSlice({
             state.avatar = user.avatar;
         },
         logout(state) {
-            localStorage.removeItem('bookingAdminToken');
+            state.token = '';
+            state._id = '';
+            state.email = '';
+            state.fullName = '';
+            state.isAdmin = '';
+            state.phoneNumber = '';
+            state.username = '';
+            state.avatar = '';
             state.isAuthn = false;
         },
         setUser(state, payload) {
             const user = payload.payload;
-            state.token = localStorage.getItem('bookingAdminToken');
             state.isAuthn = true;
             state._id = user._id;
             state.email = user.email;

@@ -10,7 +10,8 @@ function MainPage({ children }) {
             {isAuthn ? <Navbar /> : <></>}
             <div className={`${styles['tab-main-page']}  f-5`}>
                 <div className='ps-2 pt-2'>
-                    {isAuthn ? children : <></>}
+                    {children}
+                    {/* {isAuthn ? children : <></>} */}
                     {/* {child  ren} */}
                 </div>
             </div>

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const uploadImageApi = async (formData) => {
+const uploadImagesApi = async (formData) => {
     try {
-        const response = axios.post('http://localhost:5000/api/upload', formData, {
+        const response = axios.post('http://localhost:5000/api/upload-images', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             }
@@ -13,4 +13,20 @@ const uploadImageApi = async (formData) => {
     }
 }
 
-export default uploadImageApi;
+const uploadAnImagesApi = async (formData) => {
+    try {
+        const response = axios.post('http://localhost:5000/api/upload-image', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        })
+        return response;
+    } catch (error) {
+        return error.response
+    }
+}
+
+export {
+    uploadImagesApi,
+    uploadAnImagesApi
+};
