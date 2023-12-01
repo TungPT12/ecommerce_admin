@@ -20,6 +20,7 @@ import UpdateCategory from "./pages/Category/UpdateCategory/UpdateCategory";
 import Product from "./pages/Product/Product";
 import AddProduct from "./pages/Product/AddProduct/AddProduct";
 import UpdateProduct from "./pages/Product/UpdateProduct/UpdateProduct";
+import Users from "./pages/User/Users";
 const adminRouters = [
   {
     name: "Admin",
@@ -66,11 +67,11 @@ const adminRouters = [
     path: '/admin/product/edit/:id',
     element: <UpdateProduct />
   },
-  // {
-  //   name: "Hotel",
-  //   path: '/admin/hotel/edit/:id',
-  //   element: <UpdateHotel />
-  // },
+  {
+    name: "User",
+    path: '/admin/users',
+    element: <Users />
+  },
   // {
   //   name: "Rooms",
   //   path: '/admin/rooms',

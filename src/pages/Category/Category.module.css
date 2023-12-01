@@ -21,6 +21,11 @@
     border-right: 1px solid #d9d6d6c7;
 }
 
+.body-row div:last-child {
+    border-right: none
+}
+
+
 .body-row {
     border-bottom: 1px solid #d9d6d6c7;
 }

@@ -147,13 +147,14 @@ function Product() {
     const renderProducts = (products) => {
         return products.map((product, index) => {
             return <div key={product._id} className={`${styles['body-row']} d-flex ${index % 2 === 0 ? 'bg-row-even' : ''}`}>
-                <div className={`${styles['id']} f-3 ps-2 text-ellipsis`}>
+                <div className={`${styles['id']} f-4 ps-2 text-ellipsis`}>
                     <p className="text-ellipsis m-0">{product._id}</p>
                 </div>
                 <div className={`${styles['name']} f-4 text-capitalize ps-2 text-ellipsis`}>
                     <p className="text-ellipsis m-0">{product.name}</p>
                 </div>
                 <div className={`${styles['price']} f-2 text-capitalize ps-2 text-ellipsis`}>{formatPrice(product.price)}</div>
+                <div className={`${styles['price']} f-2 text-capitalize ps-2 text-ellipsis`}>{product.quantity}</div>
                 <div className={`${styles['image']} f-2 text-uppercase ps-2`}>
                     {/* <img className="w-50" alt={product.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} /> */}
                     <img className="w-50" alt={product.name} src={`${product.images[0].includes("http") ? '' : process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} />
@@ -200,9 +201,10 @@ function Product() {
                                 <div className={`${styles['table']}`}>
                                     <div className={`${styles['header-table']}`}>
                                         <div className={`${styles['header-row']} d-flex`}>
-                                            <div className='f-3 text-uppercase ps-2 text-ellipsis'>id</div>
+                                            <div className='f-4 text-uppercase ps-2 text-ellipsis'>id</div>
                                             <div className='f-4 text-capitalize ps-2 text-ellipsis'>name</div>
                                             <div className='f-2 text-capitalize ps-2 text-ellipsis'>price</div>
+                                            <div className='f-2 text-capitalize ps-2 text-ellipsis'>quantity</div>
                                             <div className='f-2 text-capitalize ps-2'>image</div>
                                             <div className='f-2 text-capitalize ps-2 text-ellipsis text-lowercase'>category</div>
                                             <div className='f-2 text-capitalize ps-2'>Edit</div>

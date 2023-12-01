@@ -36,6 +36,10 @@ p {
     padding: 0.5rem 0;
 }
 
+.body-row div:last-child {
+    border-right: none
+}
+
 
 .title {
     color: #00000070;
