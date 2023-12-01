@@ -86,6 +86,13 @@ const validatePhoneNumber = (phone) => {
     return false;
 }
 
+const validateImages = (images) => {
+    if (images.length > 0) {
+        return true
+    }
+    return false;
+}
+
 
 export {
     isEmptyInput,
@@ -98,4 +105,5 @@ export {
     validatePhoneNumber,
     validPassword,
     isInputInt,
+    validateImages,
 }

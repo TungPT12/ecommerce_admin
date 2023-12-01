@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap';
 import styles from './AddProduct.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { isEmptyInput, isEmptySelect, isInputInt, isShowWarning, isZeroInput } from '../../../utils/input';
+import { isEmptyInput, isEmptySelect, isInputInt, isShowWarning, isZeroInput, validateImages } from '../../../utils/input';
 import useInput from '../../../hook/use-input';
 import { uploadImages } from '../../../utils/uploadImage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +22,9 @@ function AddProduct() {
     const [categories, setCategories] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [isLoadingSpinnerModal, setIsLoadingSpinnerModal] = useState(false);
+    const [errorImage, setErrorImage] = useState('');
+    const [onTouchedImage, setIsTouchedImage] = useState(false);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {
@@ -74,7 +77,7 @@ function AddProduct() {
     } = useInput(isEmptyInput, '');
 
 
-    const isValidSubmit = isValidName && isValidCategory && isValidLongDescription && isValidShortDescription;
+    const isValidSubmit = isValidName && isValidCategory && isValidLongDescription && isValidShortDescription && validateImages(images);
 
     const checkIsLogin = () => {
         checkIsLoginApi().then((response) => {
@@ -185,7 +188,6 @@ function AddProduct() {
     const chooseImage = async (files) => {
         const listImage = await uploadImages(files);
         setImages([...images, ...listImage.images]);
-
     }
 
     const renderOption = (options) => {
@@ -261,11 +263,13 @@ function AddProduct() {
                                     {images.length > 0 ? <div className={`${styles['list-image']} d-grid position-relative px-2 mb-2`}>
                                         {renderImages(images)}
                                     </div> : <></>}
-                                    <input multiple onChange={(e) => {
+                                    <input onBlur={() => {
+                                        setIsTouchedImage(true)
+                                    }} multiple onChange={(e) => {
                                         chooseImage(e.target.files);
                                         e.target.value = null
                                     }} type='file' className={`ps-2`} accept=".jpg, .jpeg, .png" />
-                                </div>
+                                    {isShowWarning(validateImages(images), onTouchedImage) ? alertMessage("Please choose at least one image!") : <></>}                                </div>
                             </div>
                             <div className="mb-3">
                                 <p className={`${styles['title-input']} text-capitalize`}>Short Description</p>
@@ -286,11 +290,14 @@ function AddProduct() {
                                 onSubmitCreateProduct()
                             } : () => {
                                 onTouchedName(true);
+                                onTouchedQuantity(true)
                                 onTouchedCategory(true);
                                 onTouchedPrice(true);
                                 onTouchedShortDescription(true);
                                 onTouchedLongDescription(true);
-                            }} className={`${styles['btn-submit']} mt-4`}>Send</button>
+                                setIsTouchedImage(true)
+                                // setErrorImage('Please select at least one image!')
+                            }} className={`${styles['btn-submit']} mt-4`}>Create</button>
                         </Card>
                     </>
                 ) : <></>

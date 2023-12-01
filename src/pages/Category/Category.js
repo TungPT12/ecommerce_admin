@@ -105,6 +105,9 @@ function Category() {
                 dispatch(authnAction.logout());
                 throw new Error(response.data.message);
             }
+            if (response.status === 422) {
+                throw new Error('/422');
+            }
         }).then(() => {
             let tmpCategories = categories;
             const position = tmpCategories.findIndex((category) => {
@@ -115,8 +118,11 @@ function Category() {
             setIsLoadingSpinnerModal(false);
         }).catch((error) => {
             loadCategories();
+            setIsLoadingSpinnerModal(false);
             if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
                 navigate(error.message)
+            } else if (error.message === '/422') {
+                alert('This category have products!')
             } else {
                 navigate('/admin/signin')
             }

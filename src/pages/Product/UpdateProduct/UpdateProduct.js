@@ -3,25 +3,28 @@ import { Card } from 'react-bootstrap';
 import styles from './UpdateProduct.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { isEmptyInput, isEmptySelect, isInputInt, isShowWarning, isZeroInput } from '../../../utils/input';
+import { isEmptyInput, isEmptySelect, isInputInt, isShowWarning, isZeroInput, validateImages } from '../../../utils/input';
 import useInput from '../../../hook/use-input';
 import { uploadImages } from '../../../utils/uploadImage';
 import { useDispatch, useSelector } from 'react-redux';
 import alertMessage from '../../../utils/warningMessage';
 import { authnAction } from '../../../stores/slice/authn';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { checkIsLoginApi } from '../../../apis/authn';
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner';
 import { getCategoriesAdminApi } from '../../../apis/category';
 import LoadingSpinnerModal from '../../../components/LoadingSpinnerModal/LoadingSpinnerModal';
-import { createProductAdminApi } from '../../../apis/product';
+import { createProductAdminApi, getProductByIdAdminApi } from '../../../apis/product';
 
 function UpdateProduct() {
+    const { id } = useParams();
     const { token, isAuthn } = useSelector(state => state.authn)
     const [images, setImages] = useState([])
     const [categories, setCategories] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [isLoadingSpinnerModal, setIsLoadingSpinnerModal] = useState(false);
+    const [onTouchedImage, setIsTouchedImage] = useState(false);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {
@@ -173,11 +176,46 @@ function UpdateProduct() {
         })
     }
 
+    const getProductById = (token, id) => {
+        getProductByIdAdminApi(token, id).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
+                throw new Error(response.data.message);
+            }
+            return response.data
+        }).then((data) => {
+            setInputName(data.name);
+            setInputPrice(data.price);
+            setInputCategory(data.category._id);
+            setInputShortDescription(data.short_desc);
+            setInputLongDescription(data.long_desc);
+            setInputQuantity(data.quantity);
+            setImages(data.images);
+            setIsLoading(false);
+        }).catch((error) => {
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/admin/signin')
+            }
+        })
+    }
+
     useEffect(() => {
         if (!isAuthn) {
             checkIsLogin();
         } else {
             loadCategories()
+            getProductById(token, id)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthn])
@@ -185,7 +223,6 @@ function UpdateProduct() {
     const chooseImage = async (files) => {
         const listImage = await uploadImages(files);
         setImages([...images, ...listImage.images]);
-
     }
 
     const renderOption = (options) => {
@@ -207,7 +244,7 @@ function UpdateProduct() {
                 <FontAwesomeIcon icon={faClose} className={`${styles['close-icon']}`} onClick={() => {
                     dropImage(image)
                 }} />
-                <img src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${image}`} className='w-100 h-auto' alt='' />
+                <img src={`${image.includes("http") ? '' : process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${image}`} className='w-100 h-auto' alt='' />
             </div>
         })
     }
@@ -261,11 +298,13 @@ function UpdateProduct() {
                                     {images.length > 0 ? <div className={`${styles['list-image']} d-grid position-relative px-2 mb-2`}>
                                         {renderImages(images)}
                                     </div> : <></>}
-                                    <input multiple onChange={(e) => {
+                                    <input onBlur={() => {
+                                        setIsTouchedImage(true)
+                                    }} multiple onChange={(e) => {
                                         chooseImage(e.target.files);
                                         e.target.value = null
                                     }} type='file' className={`ps-2`} accept=".jpg, .jpeg, .png" />
-                                </div>
+                                    {isShowWarning(validateImages(images), onTouchedImage) ? alertMessage("Please choose at least one image!") : <></>}                                </div>
                             </div>
                             <div className="mb-3">
                                 <p className={`${styles['title-input']} text-capitalize`}>Short Description</p>
@@ -286,10 +325,12 @@ function UpdateProduct() {
                                 onSubmitCreateProduct()
                             } : () => {
                                 onTouchedName(true);
+                                onTouchedQuantity(true)
                                 onTouchedCategory(true);
                                 onTouchedPrice(true);
                                 onTouchedShortDescription(true);
                                 onTouchedLongDescription(true);
+                                setIsTouchedImage(true)
                             }} className={`${styles['btn-submit']} mt-4`}>Update</button>
                         </Card>
                     </>

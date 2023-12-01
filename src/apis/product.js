@@ -21,7 +21,7 @@ const createProductAdminApi = async (token, product) => {
 
 const getProductByIdAdminApi = async (token, id) => {
     try {
-        const response = await axiosAdminInstance.get(`/hotel/${id}`, setHeaders(token));
+        const response = await axiosAdminInstance.get(`/product/${id}`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
