@@ -136,7 +136,7 @@ function Product() {
                 <div className={`${styles['price']} f-2 text-capitalize ps-2 text-ellipsis`}>{formatPrice(product.price)}</div>
                 <div className={`${styles['image']} f-2 text-uppercase ps-2`}>
                     {/* <img className="w-50" alt={product.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} /> */}
-                    <img className="w-50" alt={product.name} src={`${product.images[0]}`} />
+                    <img className="w-50" alt={product.name} src={`${product.images[0].includes("http") ? '' : process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} />
                 </div>
                 <div className={`${styles['category']} f-2 text-lowercase ps-2`}>
                     <p className="text-ellipsis m-0">{product.category.name}</p>

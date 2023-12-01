@@ -19,6 +19,7 @@ import { checkIsLoginApi } from "./apis/authn";
 import UpdateCategory from "./pages/Category/UpdateCategory/UpdateCategory";
 import Product from "./pages/Product/Product";
 import AddProduct from "./pages/Product/AddProduct/AddProduct";
+import UpdateProduct from "./pages/Product/UpdateProduct/UpdateProduct";
 const adminRouters = [
   {
     name: "Admin",
@@ -56,9 +57,14 @@ const adminRouters = [
     element: <Product />
   },
   {
-    name: "Hotel",
+    name: "Product",
     path: '/admin/product/add',
     element: <AddProduct />
+  },
+  {
+    name: "Product",
+    path: '/admin/product/edit/:id',
+    element: <UpdateProduct />
   },
   // {
   //   name: "Hotel",

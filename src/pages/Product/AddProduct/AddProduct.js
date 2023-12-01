@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap';
 import styles from './AddProduct.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { isEmptyInput, isEmptySelect, isShowWarning, isZeroInput } from '../../../utils/input';
+import { isEmptyInput, isEmptySelect, isInputInt, isShowWarning, isZeroInput } from '../../../utils/input';
 import useInput from '../../../hook/use-input';
 import { uploadImages } from '../../../utils/uploadImage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ import { checkIsLoginApi } from '../../../apis/authn';
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner';
 import { getCategoriesAdminApi } from '../../../apis/category';
 import LoadingSpinnerModal from '../../../components/LoadingSpinnerModal/LoadingSpinnerModal';
+import { createProductAdminApi } from '../../../apis/product';
 
 function AddProduct() {
     const { token, isAuthn } = useSelector(state => state.authn)
@@ -21,7 +22,6 @@ function AddProduct() {
     const [categories, setCategories] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [isLoadingSpinnerModal, setIsLoadingSpinnerModal] = useState(false);
-    // const [types, setTypes] = useState([])
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {
@@ -40,6 +40,14 @@ function AddProduct() {
         setInput: setInputPrice,
         resetInput: resetInputPrice,
     } = useInput(isZeroInput, '');
+    const {
+        isValid: isValidQuantity,
+        input: inputQuantity,
+        isTouch: isTouchQuantity,
+        onTouched: onTouchedQuantity,
+        setInput: setInputQuantity,
+        resetInput: resetInputQuantity,
+    } = useInput(isInputInt, '');
     const {
         isValid: isValidCategory,
         input: inputCategory,
@@ -95,41 +103,48 @@ function AddProduct() {
         })
     }
 
-    const onSubmit = () => {
-        // const hotel = {
-        //     name: inputName.trim(),
-        //     category: inputCategory.trim(),
-        //     area: inputShortDescription.trim(),
-        //     address: inputLongDescription.trim(),
-        //     title: inputTitle.trim(),
-        //     distance: inputDistance.trim(),
-        //     featured: featured,
-        //     photos: images,
-        //     desc: description.trim()
-        // }
-        // createHotelAdminApi(token, hotel).then((response) => {
-        //     if (response.status === 403 || response.status === 401) {
-        //         localStorage.removeItem('bookingAdminToken');
-        //         window.location.href = '/admin/login'
-        //     }
-        //     if (response.status !== 200) {
-        //         throw new Error(response.data.message);
-        //     }
-        //     alert('Successfully')
-        // }).then(() => {
-        //     resetInputAddress();
-        //     resetInputName();
-        //     resetInputArea();
-        //     resetInputTitle();
-        //     resetInputType();
-        //     resetInputDistance();
-        //     setFeature(false);
-        //     setImages([]);
-        //     setDescription('')
-        // }).catch((error) => {
-        //     console.log(error)
-        //     alert('Fail')
-        // })
+    const onSubmitCreateProduct = () => {
+        const product = {
+            name: inputName.trim(),
+            category: inputCategory.trim(),
+            price: inputPrice,
+            quantity: inputQuantity,
+            short_desc: inputShortDescription.trim(),
+            long_desc: inputLongDescription.trim(),
+            images: images,
+        }
+        createProductAdminApi(token, product).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
+                throw new Error(response.data.message);
+            }
+            alert('Successfully')
+        }).then(() => {
+            setIsLoadingSpinnerModal(false)
+            resetInputName();
+            resetInputPrice();
+            resetInputQuantity();
+            resetInputLongDescription();
+            resetInputShortDescription();
+            resetInputCategory();
+            setImages([]);
+        }).catch((error) => {
+            setIsLoadingSpinnerModal(false)
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/admin/signin')
+            }
+        })
     }
 
     const loadCategories = () => {
@@ -158,10 +173,7 @@ function AddProduct() {
         })
     }
 
-
     useEffect(() => {
-        // loadArea();
-        // loadType();
         if (!isAuthn) {
             checkIsLogin();
         } else {
@@ -219,6 +231,13 @@ function AddProduct() {
                                     {isShowWarning(isValidName, isTouchName) ? alertMessage("Please enter product name!") : <></>}
                                 </div>
                                 <div>
+                                    <p>Quantity</p>
+                                    <input type="number" placeholder='Quantity' value={inputQuantity} onBlur={onTouchedQuantity} onChange={(e) => {
+                                        setInputQuantity(e.target.value)
+                                    }} className={`${styles['input-text']} py-1`} />
+                                    {isShowWarning(isValidQuantity, isTouchQuantity) ? alertMessage("Please enter quantity name!") : <></>}
+                                </div>
+                                <div>
                                     <p>Price</p>
                                     <input type="number" placeholder='Price' value={inputPrice} onBlur={onTouchedPrice} onChange={(e) => {
                                         setInputPrice(e.target.value)
@@ -262,7 +281,10 @@ function AddProduct() {
                                 }}></textarea>
                                 {isShowWarning(isValidLongDescription, isTouchLongDescription) ? alertMessage("Please enter long description!") : <></>}
                             </div>
-                            <button onClick={isValidSubmit ? onSubmit : () => {
+                            <button onClick={isValidSubmit ? () => {
+                                setIsLoadingSpinnerModal(true);
+                                onSubmitCreateProduct()
+                            } : () => {
                                 onTouchedName(true);
                                 onTouchedCategory(true);
                                 onTouchedPrice(true);

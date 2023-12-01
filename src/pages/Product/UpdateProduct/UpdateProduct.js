@@ -3,174 +3,189 @@ import { Card } from 'react-bootstrap';
 import styles from './UpdateProduct.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { isEmptyInput, isEmptySelect, isShowWarning } from '../../../utils/input';
+import { isEmptyInput, isEmptySelect, isInputInt, isShowWarning, isZeroInput } from '../../../utils/input';
 import useInput from '../../../hook/use-input';
-import uploadImage from '../../../utils/uploadImage';
-import { getHotelByIdAdminApi, updateHotelByIdAdminApi } from '../../../apis/hotel';
-import { getAreasAdminApi } from '../../../apis/area';
-import { useSelector } from 'react-redux';
-import { getTypesAdminApi } from '../../../apis/type';
-import { useNavigate, useParams } from 'react-router-dom';
-import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner';
+import { uploadImages } from '../../../utils/uploadImage';
+import { useDispatch, useSelector } from 'react-redux';
 import alertMessage from '../../../utils/warningMessage';
+import { authnAction } from '../../../stores/slice/authn';
+import { useNavigate } from 'react-router-dom';
+import { checkIsLoginApi } from '../../../apis/authn';
+import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner';
+import { getCategoriesAdminApi } from '../../../apis/category';
+import LoadingSpinnerModal from '../../../components/LoadingSpinnerModal/LoadingSpinnerModal';
+import { createProductAdminApi } from '../../../apis/product';
 
 function UpdateProduct() {
-    const navigate = useNavigate();
-    const { token } = useSelector(state => state.authn);
-    const [isLoading, setIsLoading] = useState(true)
+    const { token, isAuthn } = useSelector(state => state.authn)
     const [images, setImages] = useState([])
-    const [featured, setFeature] = useState(false)
-    const [area, setArea] = useState([])
-    const [types, setTypes] = useState([])
-    const [description, setDescription] = useState('')
-    const { id } = useParams();
+    const [categories, setCategories] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [isLoadingSpinnerModal, setIsLoadingSpinnerModal] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {
         isValid: isValidName,
         input: inputName,
         isTouch: isTouchName,
         onTouched: onTouchedName,
         setInput: setInputName,
-        // resetInput: resetInputName,
+        resetInput: resetInputName,
     } = useInput(isEmptyInput, '');
     const {
-        isValid: isValidType,
-        input: inputType,
-        isTouch: isTouchType,
-        onTouched: onTouchedType,
-        setInput: setInputType,
-        // resetInput: resetInputType
+        isValid: isValidPrice,
+        input: inputPrice,
+        isTouch: isTouchPrice,
+        onTouched: onTouchedPrice,
+        setInput: setInputPrice,
+        resetInput: resetInputPrice,
+    } = useInput(isZeroInput, '');
+    const {
+        isValid: isValidQuantity,
+        input: inputQuantity,
+        isTouch: isTouchQuantity,
+        onTouched: onTouchedQuantity,
+        setInput: setInputQuantity,
+        resetInput: resetInputQuantity,
+    } = useInput(isInputInt, '');
+    const {
+        isValid: isValidCategory,
+        input: inputCategory,
+        isTouch: isTouchCategory,
+        onTouched: onTouchedCategory,
+        setInput: setInputCategory,
+        resetInput: resetInputCategory
     } = useInput(isEmptySelect, 'none');
     const {
-        isValid: isValidArea,
-        input: inputArea,
-        isTouch: isTouchArea,
-        onTouched: onTouchedArea,
-        setInput: setInputArea,
-    } = useInput(isEmptySelect, 'none');
-    const {
-        isValid: isValidAddress,
-        input: inputAddress,
-        isTouch: isTouchAddress,
-        onTouched: onTouchedAddress,
-        setInput: setInputAddress,
+        isValid: isValidShortDescription,
+        input: inputShortDescription,
+        isTouch: isTouchShortDescription,
+        onTouched: onTouchedShortDescription,
+        setInput: setInputShortDescription,
+        resetInput: resetInputShortDescription
     } = useInput(isEmptyInput, '');
     const {
-        isValid: isValidDistance,
-        input: inputDistance,
-        isTouch: isTouchDistance,
-        onTouched: onTouchedDistance,
-        setInput: setInputDistance,
-    } = useInput(isEmptyInput, '');
-    const {
-        isValid: isValidTitle,
-        input: inputTitle,
-        isTouch: isTouchTitle,
-        onTouched: onTouchedTitle,
-        setInput: setInputTitle,
-        // resetInput: resetInputTitle
+        isValid: isValidLongDescription,
+        input: inputLongDescription,
+        isTouch: isTouchLongDescription,
+        onTouched: onTouchedLongDescription,
+        setInput: setInputLongDescription,
+        resetInput: resetInputLongDescription
     } = useInput(isEmptyInput, '');
 
-    const isValidSubmit = isValidName && isValidType && isValidArea && isValidTitle && isValidDistance;
 
-    const onSubmitUpdate = () => {
-        const hotel = {
-            id: id,
-            name: inputName.trim(),
-            type: inputType.trim(),
-            area: inputArea.trim(),
-            address: inputAddress.trim(),
-            title: inputTitle.trim(),
-            distance: inputDistance.trim(),
-            featured: featured,
-            photos: images,
-            desc: description.trim()
-        }
-        updateHotelByIdAdminApi(token, hotel).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-            alert('Successfully!')
-            navigate('/admin/hotels')
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
+    const isValidSubmit = isValidName && isValidCategory && isValidLongDescription && isValidShortDescription;
 
-    const loadArea = () => {
-        getAreasAdminApi(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
+    const checkIsLogin = () => {
+        checkIsLoginApi().then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
             }
-            if (response.status !== 200) {
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
                 throw new Error(response.data.message);
             }
-            setArea(response.data.results)
-        }).catch((error) => {
-            console.log(error)
-            alert(error.message);
-        })
-    }
-    const loadType = () => {
-        getTypesAdminApi(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-            setTypes(response.data.results)
-        }).catch((error) => {
-            console.log(error)
-            alert(error.message);
-        })
-    }
-
-    const loadHotelById = (id) => {
-        getHotelByIdAdminApi(token, id).then((response) => {
-            setIsLoading(false);
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-            }
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            }
-            return response.data;
+            return response.data
         }).then((data) => {
-            setInputName(data.name);
-            setInputType(data.type._id);
-            setInputArea(data.area._id);
-            setInputAddress(data.address);
-            setInputDistance(data.distance);
-            setInputTitle(data.title);
-            setFeature(data.featured);
-            setImages(data.photos)
-            setDescription(data.desc)
+            dispatch(authnAction.login(data))
         }).catch((error) => {
-            console.log(error)
-            alert(error.message);
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/admin/signin')
+            }
+        })
+    }
+
+    const onSubmitCreateProduct = () => {
+        const product = {
+            name: inputName.trim(),
+            category: inputCategory.trim(),
+            price: inputPrice,
+            quantity: inputQuantity,
+            short_desc: inputShortDescription.trim(),
+            long_desc: inputLongDescription.trim(),
+            images: images,
+        }
+        createProductAdminApi(token, product).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
+                throw new Error(response.data.message);
+            }
+            alert('Successfully')
+        }).then(() => {
+            setIsLoadingSpinnerModal(false)
+            resetInputName();
+            resetInputPrice();
+            resetInputQuantity();
+            resetInputLongDescription();
+            resetInputShortDescription();
+            resetInputCategory();
+            setImages([]);
+        }).catch((error) => {
+            setIsLoadingSpinnerModal(false)
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/admin/signin')
+            }
+        })
+    }
+
+    const loadCategories = () => {
+        getCategoriesAdminApi(token).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
+                throw new Error(response.data.message);
+            }
+            setIsLoading(false)
+            setCategories(response.data.results)
+        }).catch((error) => {
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/admin/signin')
+            }
         })
     }
 
     useEffect(() => {
-        loadArea();
-        loadType();
-        loadHotelById(id)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const chooseImage = async (image) => {
-        const data = await uploadImage(image);
-        if (data) {
-            const urlImage = data.urlImage;
-            setImages([...images, urlImage]);
+        if (!isAuthn) {
+            checkIsLogin();
+        } else {
+            loadCategories()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthn])
+
+    const chooseImage = async (files) => {
+        const listImage = await uploadImages(files);
+        setImages([...images, ...listImage.images]);
+
     }
 
     const renderOption = (options) => {
@@ -178,6 +193,7 @@ function UpdateProduct() {
             return <option key={option._id} value={option._id}>{option.name}</option>
         })
     }
+
     const dropImage = (imgLink) => {
         const newImages = images.filter((image) => {
             return imgLink !== image
@@ -187,114 +203,97 @@ function UpdateProduct() {
 
     const renderImages = (images) => {
         return images.map((image) => {
-            return <div key={image} className={`${styles['image-wrapper']} position-relative w-100 d-flex justify-content-center`}>
+            return <div key={image} className={`${styles['image-wrapper']} position-relative d-flex justify-content-center`}>
                 <FontAwesomeIcon icon={faClose} className={`${styles['close-icon']}`} onClick={() => {
                     dropImage(image)
                 }} />
-                <img src={image} className='h-100' alt='' />
+                <img src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${image}`} className='w-100 h-auto' alt='' />
             </div>
         })
     }
 
     return (
         <div>
+            {isLoadingSpinnerModal ? <LoadingSpinnerModal /> : <></>}
             {
-                isLoading ?
-                    <LoadingSpinner /> : <>
+                isAuthn ? (
+                    isLoading ? <LoadingSpinner /> : <>
                         <Card className={`${styles['header-add_hotel']} p-2`}>
-                            <h3 className=''>Edit Hotel</h3>
+                            <h3 className=''>Update Product</h3>
                         </Card>
-                        <Card className={`${styles['add-hotel']} py-4  px-5 mt-3 mb-3`}>
-                            <div className={`${styles['form']} d-grid mb-3`}>
+                        <Card className={`${styles['add-product']} py-4  px-5 mt-3 mb-3`}>
+                            <div className={`${styles['form']}  d-grid mb-3`}>
                                 <div>
                                     <p>Name</p>
-                                    <input placeholder='My Hotel' value={inputName} onBlur={onTouchedName} onChange={(e) => {
+                                    <input placeholder='Enter Product Name' value={inputName} onBlur={onTouchedName} onChange={(e) => {
                                         setInputName(e.target.value)
-                                    }} className={`${styles['input-text']}`} />
-                                    {isShowWarning(isValidName, isTouchName) ? alertMessage("Please enter hotel name!") : <></>}
+                                    }} className={`${styles['input-text']} py-1`} />
+                                    {isShowWarning(isValidName, isTouchName) ? alertMessage("Please enter product name!") : <></>}
                                 </div>
                                 <div>
-                                    <p>Type</p>
-                                    <select onBlur={onTouchedType} value={inputType} onChange={(e) => {
-                                        setInputType(e.target.value)
-                                    }} className={`${styles['select-box-hotel_form']} w-100`}>
-                                        <option value="none">Select type</option>
+                                    <p>Quantity</p>
+                                    <input type="number" placeholder='Quantity' value={inputQuantity} onBlur={onTouchedQuantity} onChange={(e) => {
+                                        setInputQuantity(e.target.value)
+                                    }} className={`${styles['input-text']} py-1`} />
+                                    {isShowWarning(isValidQuantity, isTouchQuantity) ? alertMessage("Please enter quantity name!") : <></>}
+                                </div>
+                                <div>
+                                    <p>Price</p>
+                                    <input type="number" placeholder='Price' value={inputPrice} onBlur={onTouchedPrice} onChange={(e) => {
+                                        setInputPrice(e.target.value)
+                                    }} className={`${styles['input-text']} py-1`} />
+                                    {isShowWarning(isValidPrice, isTouchPrice) ? alertMessage("Please enter price name!") : <></>}
+                                </div>
+                                <div>
+                                    <p>Category</p>
+                                    <select onBlur={onTouchedCategory} value={inputCategory} onChange={(e) => {
+                                        setInputCategory(e.target.value)
+                                    }} className={`${styles['select-box-hotel_form']} w-100  outline-none`}>
+                                        <option className={`${styles['first-option']}`} value="none">Select Category</option>
                                         {
-                                            types.length > 0 ? renderOption(types) : <></>
+                                            categories.length > 0 ? renderOption(categories) : <></>
                                         }
                                     </select>
-                                    {isShowWarning(isValidType, isTouchType) ? alertMessage("Please enter type!") : <></>}
-                                </div>
-                                <div>
-                                    <p>Area</p>
-                                    <select onBlur={onTouchedArea} value={inputArea} onChange={(e) => {
-                                        setInputArea(e.target.value)
-                                    }} className={`${styles['select-box-hotel_form']} w-100`}>
-                                        <option value="none">Select area</option>
-                                        {
-                                            area.length > 0 ? renderOption(area) : <></>
-                                        }
-                                    </select>
-                                    {isShowWarning(isValidArea, isTouchArea) ? alertMessage("Please enter type!") : <></>}
-                                </div>
-                                <div>
-                                    <p>Address</p>
-                                    <input onBlur={onTouchedAddress} value={inputAddress} onChange={(e) => {
-                                        setInputAddress(e.target.value)
-                                    }} placeholder='Address' className={`${styles['input-text']}`} />
-                                    {isShowWarning(isValidAddress, isTouchAddress) ? alertMessage("Please enter address!") : <></>}
-                                </div>
-                                <div>
-                                    <p>Distance from Area Center</p>
-                                    <input onBlur={onTouchedDistance} value={inputDistance} onChange={(e) => {
-                                        setInputDistance(e.target.value)
-                                    }} placeholder='Distance' className={`${styles['input-text']}`} />
-                                    {isShowWarning(isValidDistance, isTouchDistance) ? alertMessage("Please enter distance!") : <></>}
-                                </div>
-                                <div>
-                                    <p>title</p>
-                                    <input onBlur={onTouchedTitle} value={inputTitle} onChange={(e) => {
-                                        setInputTitle(e.target.value)
-                                    }} placeholder='Title' className={`${styles['input-text']}`} />
-                                    {isShowWarning(isValidTitle, isTouchTitle) ? alertMessage("Please enter title!") : <></>}
+                                    {isShowWarning(isValidCategory, isTouchCategory) ? alertMessage("Please select category!") : <></>}
                                 </div>
                                 <div>
                                     <p>images</p>
                                     {images.length > 0 ? <div className={`${styles['list-image']} d-grid position-relative px-2 mb-2`}>
                                         {renderImages(images)}
                                     </div> : <></>}
-                                    <input onChange={(e) => {
-                                        chooseImage(e.target.files[0]);
+                                    <input multiple onChange={(e) => {
+                                        chooseImage(e.target.files);
                                         e.target.value = null
                                     }} type='file' className={`ps-2`} accept=".jpg, .jpeg, .png" />
                                 </div>
-                                <div>
-                                    <p>feature</p>
-                                    <select value={featured} onChange={(e) => {
-                                        setFeature(e.target.value)
-                                    }} className={`${styles['select-box-hotel_form']} w-100`}>
-                                        <option value={false}>No</option>
-                                        <option value={true}>Yes</option>
-                                    </select>
-                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <p className={`${styles['title-input']} text-capitalize`}>Short Description</p>
+                                <textarea placeholder="Enter Short Description" onClick={onTouchedShortDescription} className={`${styles['short-description']} p-1 w-100 outline-none`} value={inputShortDescription} onChange={(e) => {
+                                    setInputShortDescription(e.target.value);
+                                }}></textarea>
+                                {isShowWarning(isValidShortDescription, isTouchShortDescription) ? alertMessage("Please enter short description!") : <></>}
                             </div>
                             <div className={`${styles['description']} w-100`}>
-                                <p className='text-capitalize'>Description</p>
-                                <textarea className='w-100 outline-none' value={description} onChange={(e) => {
-                                    setDescription(e.target.value);
+                                <p className={`${styles['title-input']} text-capitalize`}>Long Description</p>
+                                <textarea placeholder="Enter Long Description" onClick={onTouchedLongDescription} className={`${styles['long-description']} p-1 w-100 outline-none`} value={inputLongDescription} onChange={(e) => {
+                                    setInputLongDescription(e.target.value);
                                 }}></textarea>
+                                {isShowWarning(isValidLongDescription, isTouchLongDescription) ? alertMessage("Please enter long description!") : <></>}
                             </div>
-                            <button onClick={isValidSubmit ? onSubmitUpdate : () => {
+                            <button onClick={isValidSubmit ? () => {
+                                setIsLoadingSpinnerModal(true);
+                                onSubmitCreateProduct()
+                            } : () => {
                                 onTouchedName(true);
-                                onTouchedType(true);
-                                onTouchedArea(true);
-                                onTouchedAddress(true);
-                                onTouchedTitle(true);
+                                onTouchedCategory(true);
+                                onTouchedPrice(true);
+                                onTouchedShortDescription(true);
+                                onTouchedLongDescription(true);
                             }} className={`${styles['btn-submit']} mt-4`}>Update</button>
                         </Card>
                     </>
-
-
+                ) : <></>
             }
         </div>
     );

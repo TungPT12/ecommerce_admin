@@ -9,20 +9,19 @@ const getProductsAdminApi = async (token) => {
         return error.response;
     }
 }
-// const getAllHotelAdminApi = async (token, { isDisable, page }) => {
-//     try {
-//         const router = '/hotels?isDisable=' + (isDisable !== undefined && isDisable !== null ? isDisable : '') +
-//             '&page=' + (page ? page : 1);
-//         const response = await axiosAdminInstance.get(router, setHeaders(token));
-//         return response;
-//     } catch (error) {
-//         return error.response;
-//     }
-// }
 
-const createHotelAdminApi = async (token, hotel) => {
+const createProductAdminApi = async (token, product) => {
     try {
-        const response = await axiosAdminInstance.post('/hotel', hotel, setHeaders(token));
+        const response = await axiosAdminInstance.post('/product', product, setHeaders(token));
+        return response;
+    } catch (error) {
+        return error.response;
+    }
+}
+
+const getProductByIdAdminApi = async (token, id) => {
+    try {
+        const response = await axiosAdminInstance.get(`/hotel/${id}`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
@@ -38,14 +37,6 @@ const disableHotelAdminApi = async (token, id) => {
     }
 }
 
-const getHotelByIdAdminApi = async (token, id) => {
-    try {
-        const response = await axiosAdminInstance.get(`/hotel/${id}`, setHeaders(token));
-        return response;
-    } catch (error) {
-        return error.response;
-    }
-}
 
 const updateHotelByIdAdminApi = async (token, hotel) => {
     try {
@@ -68,9 +59,9 @@ const deleteHotelByIdAdminApi = async (token, id) => {
 
 export {
     getProductsAdminApi,
-    createHotelAdminApi,
+    createProductAdminApi,
     disableHotelAdminApi,
-    getHotelByIdAdminApi,
+    getProductByIdAdminApi,
     updateHotelByIdAdminApi,
     deleteHotelByIdAdminApi,
 }

@@ -19,6 +19,14 @@ const isZeroInputInt = (input) => {
     return false;
 }
 
+const isInputInt = (input) => {
+    input = parseInt(input)
+    if (input) {
+        return true;
+    }
+    return false;
+}
+
 const isShowWarning = (isValid, isTouch) => {
     if (isTouch) {
         if (isValid === false) {
@@ -88,5 +96,6 @@ export {
     isValidInputRooms,
     validatedEmail,
     validatePhoneNumber,
-    validPassword
+    validPassword,
+    isInputInt,
 }
