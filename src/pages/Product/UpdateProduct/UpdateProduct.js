@@ -14,7 +14,7 @@ import { checkIsLoginApi } from '../../../apis/authn';
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner';
 import { getCategoriesAdminApi } from '../../../apis/category';
 import LoadingSpinnerModal from '../../../components/LoadingSpinnerModal/LoadingSpinnerModal';
-import { createProductAdminApi, getProductByIdAdminApi } from '../../../apis/product';
+import { createProductAdminApi, getProductByIdAdminApi, updateProductByIdAdminApi } from '../../../apis/product';
 
 function UpdateProduct() {
     const { id } = useParams();
@@ -77,7 +77,7 @@ function UpdateProduct() {
     } = useInput(isEmptyInput, '');
 
 
-    const isValidSubmit = isValidName && isValidCategory && isValidLongDescription && isValidShortDescription;
+    const isValidSubmit = isValidName && isValidCategory && isValidLongDescription && isValidShortDescription && validateImages(images);
 
     const checkIsLogin = () => {
         checkIsLoginApi().then((response) => {
@@ -106,8 +106,9 @@ function UpdateProduct() {
         })
     }
 
-    const onSubmitCreateProduct = () => {
+    const onSubmitUpdateProduct = () => {
         const product = {
+            id: id,
             name: inputName.trim(),
             category: inputCategory.trim(),
             price: inputPrice,
@@ -116,7 +117,7 @@ function UpdateProduct() {
             long_desc: inputLongDescription.trim(),
             images: images,
         }
-        createProductAdminApi(token, product).then((response) => {
+        updateProductByIdAdminApi(token, product).then((response) => {
             if (response.status === 500) {
                 throw new Error('/500');
             }
@@ -132,14 +133,7 @@ function UpdateProduct() {
             }
             alert('Successfully')
         }).then(() => {
-            setIsLoadingSpinnerModal(false)
-            resetInputName();
-            resetInputPrice();
-            resetInputQuantity();
-            resetInputLongDescription();
-            resetInputShortDescription();
-            resetInputCategory();
-            setImages([]);
+            navigate('/admin/products')
         }).catch((error) => {
             setIsLoadingSpinnerModal(false)
             if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
@@ -322,7 +316,7 @@ function UpdateProduct() {
                             </div>
                             <button onClick={isValidSubmit ? () => {
                                 setIsLoadingSpinnerModal(true);
-                                onSubmitCreateProduct()
+                                onSubmitUpdateProduct()
                             } : () => {
                                 onTouchedName(true);
                                 onTouchedQuantity(true)

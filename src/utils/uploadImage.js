@@ -7,9 +7,6 @@ const uploadImages = async (images) => {
         for (let index = 0; index < images.length; index++) {
             formData.append('images', images[index]);
         }
-        // images.forEach(image => {
-        //     formData.append('images', image);
-        // });
         const response = await uploadImagesApi(formData);
         if (response.status !== 200) {
             throw new Error('loi')

@@ -140,6 +140,7 @@ function AddProduct() {
             resetInputShortDescription();
             resetInputCategory();
             setImages([]);
+            setIsTouchedImage(false)
         }).catch((error) => {
             setIsLoadingSpinnerModal(false)
             if (error.message === '/500' || error.message === '/400' || error.message === '/404') {

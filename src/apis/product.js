@@ -38,18 +38,18 @@ const disableHotelAdminApi = async (token, id) => {
 }
 
 
-const updateHotelByIdAdminApi = async (token, hotel) => {
+const updateProductByIdAdminApi = async (token, product) => {
     try {
-        const response = await axiosAdminInstance.put(`/hotel`, hotel, setHeaders(token));
+        const response = await axiosAdminInstance.put(`/product/${product.id}`, product, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
     }
 }
 
-const deleteHotelByIdAdminApi = async (token, id) => {
+const deleteProductByIdAdminApi = async (token, id) => {
     try {
-        const response = await axiosAdminInstance.delete(`/hotel/${id}`, setHeaders(token));
+        const response = await axiosAdminInstance.delete(`/product/${id}`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
@@ -60,8 +60,8 @@ const deleteHotelByIdAdminApi = async (token, id) => {
 export {
     getProductsAdminApi,
     createProductAdminApi,
-    disableHotelAdminApi,
+    // disableHotelAdminApi,
     getProductByIdAdminApi,
-    updateHotelByIdAdminApi,
-    deleteHotelByIdAdminApi,
+    updateProductByIdAdminApi,
+    deleteProductByIdAdminApi,
 }

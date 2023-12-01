@@ -7,7 +7,7 @@ import ConfirmModal from '../../components/CofirmModal/ConfirmModal';
 import UpdateButton from '../../components/UpdateButton/UpdateButton';
 import DeleteButton from '../../components/DeleteButton/DeleteButton';
 import LoadingSpinnerModal from '../../components/LoadingSpinnerModal/LoadingSpinnerModal';
-import { getProductsAdminApi } from '../../apis/product';
+import { deleteProductByIdAdminApi, getProductsAdminApi } from '../../apis/product';
 import { authnAction } from '../../stores/slice/authn';
 import { checkIsLoginApi } from '../../apis/authn';
 import formatPrice from '../../utils/FormatPrice';
@@ -68,6 +68,9 @@ function Product() {
                 dispatch(authnAction.logout());
                 throw new Error(response.data.message);
             }
+            if (response.status === 422) {
+                throw new Error('/422');
+            }
             return response.data
         }).then((data) => {
             dispatch(authnAction.login(data))
@@ -80,33 +83,50 @@ function Product() {
         })
     }
 
-    // const deleteHotels = (id) => {
-    //     deleteHotelByIdAdminApi(token, id).then((response) => {
-    //         if (response.status === 403 || response.status === 401) {
-    //             localStorage.removeItem('bookingAdminToken');
-    //             window.location.href = '/admin/login'
-    //         }
-    //         if (response.status === 400) {
-    //             throw new Error(response.data.message)
-    //         }
-    //         if (response.status !== 200) {
-    //             throw new Error('Something wrong');
-    //         }
-    //     }).then(() => {
-    //         setModalOption({
-    //             isOpen: false,
-    //             onClick: () => { }
-    //         })
-    //         loadHotel()
-    //         alert("Successfully!")
-    //     }).catch((error) => {
-    //         setModalOption({
-    //             isOpen: false,
-    //             onClick: () => { }
-    //         })
-    //         alert(error.message)
-    //     })
-    // }
+    const deleteProduct = (id) => {
+        deleteProductByIdAdminApi(token, id).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
+                throw new Error(response.data.message);
+            }
+        }).then(() => {
+            let tmpProducts = products;
+            const position = tmpProducts.findIndex((product) => {
+                return id === product._id;
+            })
+            tmpProducts.splice(position, 1);
+            setProducts([...tmpProducts])
+            setModalOption({
+                isOpen: false,
+                onClick: () => { }
+            })
+            setIsLoadingSpinnerModal(false);
+            alert("Successfully!")
+        }).catch((error) => {
+            setIsLoadingSpinnerModal(false);
+            loadProducts()
+            setModalOption({
+                isOpen: false,
+                onClick: () => { }
+            })
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else if (error.message === '/422') {
+                alert('This product have order!')
+            } else {
+                navigate('/admin/signin')
+            }
+        })
+    }
 
     const closeModal = () => {
         setModalOption({
@@ -147,11 +167,11 @@ function Product() {
                     />
                     <DeleteButton
                         onclick={() => {
-                            setIsLoadingSpinnerModal(true);
                             setModalOption({
                                 isOpen: true,
                                 onClick: () => {
-                                    // deleteHotels(hotel._id)
+                                    setIsLoadingSpinnerModal(true);
+                                    deleteProduct(product._id)
                                 }
                             })
                         }}
@@ -163,6 +183,9 @@ function Product() {
 
     return (
         <div>
+            {
+                isLoadingSpinnerModal ? <LoadingSpinnerModal /> : <></>
+            }
             {
                 isAuthn ? (
                     isLoading ? <LoadingSpinner /> : <>

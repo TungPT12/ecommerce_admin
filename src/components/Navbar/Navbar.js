@@ -1,4 +1,4 @@
-import { faBox, faUser, faHouse, faDashboard, faDollar, faArrowRightFromBracket, faCity, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faBox, faUser, faCartShopping, faMessage, faDashboard, faArrowRightFromBracket, faTags } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styles from './Navbar.module.css';
@@ -34,13 +34,6 @@ function Navbar() {
                     <FontAwesomeIcon icon={faTags} className={`${styles['icon']} f-1`} />
                     <span className={`${styles['tab-name']} text-capitalize f-5`}>Category</span>
                 </NavLink>
-                <NavLink to="/admin/users" className={({ isActive }) => {
-                    let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
-                    return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
-                }}>
-                    <FontAwesomeIcon icon={faUser} className={`${styles['icon']} f-1`} />
-                    <span className={`${styles['tab-name']} text-capitalize f-5`}>users</span>
-                </NavLink>
                 <NavLink to="/admin/products" className={({ isActive }) => {
                     let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
                     return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
@@ -48,33 +41,26 @@ function Navbar() {
                     <FontAwesomeIcon icon={faBox} className={`${styles['icon']} f-1`} />
                     <span className={`${styles['tab-name']} text-capitalize f-5`}>Products</span>
                 </NavLink>
+                <NavLink to="/admin/users" className={({ isActive }) => {
+                    let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
+                    return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
+                }}>
+                    <FontAwesomeIcon icon={faUser} className={`${styles['icon']} f-1`} />
+                    <span className={`${styles['tab-name']} text-capitalize f-5`}>users</span>
+                </NavLink>
                 <NavLink to="/admin/rooms" className={({ isActive }) => {
                     let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
                     return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
                 }}>
-                    <FontAwesomeIcon icon={faHouse} className={`${styles['icon']} f-1`} />
-                    <span className={`${styles['tab-name']} text-capitalize f-5`}>rooms</span>
+                    <FontAwesomeIcon icon={faCartShopping} className={`${styles['icon']} f-1`} />
+                    <span className={`${styles['tab-name']} text-capitalize f-5`}>Order</span>
                 </NavLink>
                 <NavLink to="/admin/transactions" className={({ isActive }) => {
                     let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
                     return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
                 }}>
-                    <FontAwesomeIcon icon={faDollar} className={`${styles['icon']} f-1`} />
-                    <span className={`${styles['tab-name']} text-capitalize f-5`}>Transactions</span>
-                </NavLink>
-                <NavLink to="/admin/areas" className={({ isActive }) => {
-                    let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
-                    return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
-                }}>
-                    <FontAwesomeIcon icon={faCity} className={`${styles['icon']} f-1`} />
-                    <span className={`${styles['tab-name']} text-capitalize f-5`}>City</span>
-                </NavLink>
-                <NavLink to="/admin/types" className={({ isActive }) => {
-                    let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
-                    return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
-                }}>
-                    <FontAwesomeIcon icon={faHouse} className={`${styles['icon']} f-1`} />
-                    <span className={`${styles['tab-name']} text-capitalize f-5`}>Type</span>
+                    <FontAwesomeIcon icon={faMessage} className={`${styles['icon']} f-1`} />
+                    <span className={`${styles['tab-name']} text-capitalize f-5`}>Chat</span>
                 </NavLink>
             </div>
             <div className="ms-2">

@@ -1,4 +1,5 @@
 .background-spinner {
+    z-index: 9999;
     background: #000000a8;
     display: flex;
     justify-content: center;
