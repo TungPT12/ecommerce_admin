@@ -9,9 +9,9 @@ const getAllTransactionAdminApi = async (token, page) => {
     }
 }
 
-const getFirstEightTransactionAdminApi = async (token) => {
+const getNewOrdersApi = async (token) => {
     try {
-        const response = await axiosAdminInstance.get(`/transactions/new`, setHeaders(token));
+        const response = await axiosAdminInstance.get(`/orders-new`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
@@ -39,7 +39,7 @@ const getBalanceAdminApi = async (token) => {
 
 export {
     getAllTransactionAdminApi,
-    getFirstEightTransactionAdminApi,
+    getNewOrdersApi,
     getTransactionCount,
     getBalanceAdminApi,
 }

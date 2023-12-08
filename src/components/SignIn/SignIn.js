@@ -19,12 +19,32 @@ function SignIn() {
     //     }
     //     // eslint-disable-next-line react-hooks/exhaustive-deps
     // }, [isAuthn])
-
+    // const onSubmitLogin = async (e) => {
+    //     try {
+    //         const response = await signin(email, password);
+    //         if (response.status === 401) {
+    //             setIsLoadingSpinnerModal(false);
+    //             setWrongUser(true);
+    //             return;
+    //         }
+    //         if (response.status !== 200) {
+    //             throw new Error(response.data.message);
+    //         }
+    //         const data = response.data;
+    //         dispatch(authnAction.login(data));
+    //         dispatch(cartAction.setCart(data.cart))
+    //         setIsLoadingSpinnerModal(false);
+    //         navigate('/')
+    //     } catch (error) {
+    //         setIsLoadingSpinnerModal(false);
+    //         alert(error.message);
+    //     }
+    // }
     const onSubmitLogin = async (e) => {
         try {
             e.preventDefault();
             const response = await signin(email, password);
-            if (response.status === 401) {
+            if (response.status === 401 || response.status === 403) {
                 setWrongUser(true);
                 return;
             }
@@ -32,11 +52,9 @@ function SignIn() {
                 throw new Error(response.data.message);
             }
             const data = response.data;
-            console.log(data)
             dispatch(authnAction.login(data));
             navigate('/')
         } catch (error) {
-            console.log(error);
             alert(error.message);
         }
     }

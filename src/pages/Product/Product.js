@@ -4,7 +4,7 @@ import styles from './Product.module.css'
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ConfirmModal from '../../components/CofirmModal/ConfirmModal';
-import UpdateButton from '../../components/UpdateButton/UpdateButton';
+import ButtonLink from '../../components/ButtonLink/ButtonLink';
 import DeleteButton from '../../components/DeleteButton/DeleteButton';
 import LoadingSpinnerModal from '../../components/LoadingSpinnerModal/LoadingSpinnerModal';
 import { deleteProductByIdAdminApi, getProductsAdminApi } from '../../apis/product';
@@ -153,17 +153,17 @@ function Product() {
                 <div className={`${styles['name']} f-4 text-capitalize ps-2 text-ellipsis`}>
                     <p className="text-ellipsis m-0">{product.name}</p>
                 </div>
-                <div className={`${styles['price']} f-2 text-capitalize ps-2 text-ellipsis`}>{formatPrice(product.price)}</div>
+                <div className={`${styles['price']} f-2 text-capitalize ps-2 text-ellipsis`}>{formatPrice(product.price.toString())}</div>
                 <div className={`${styles['price']} f-2 text-capitalize ps-2 text-ellipsis`}>{product.quantity}</div>
                 <div className={`${styles['image']} f-2 text-uppercase ps-2`}>
-                    {/* <img className="w-50" alt={product.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} /> */}
                     <img className="w-50" alt={product.name} src={`${product.images[0].includes("http") ? '' : process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} />
                 </div>
                 <div className={`${styles['category']} f-2 text-lowercase ps-2`}>
                     <p className="text-ellipsis m-0">{product.category.name}</p>
                 </div>
                 <div className='f-2 text-capitalize ps-2'>
-                    <UpdateButton
+                    <ButtonLink
+                        title="update"
                         link={`/admin/product/edit/${product._id}`}
                     />
                     <DeleteButton

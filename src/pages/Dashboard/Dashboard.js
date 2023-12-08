@@ -4,231 +4,175 @@ import InfoBoard from '../../components/InfoBorad/InfoBoard';
 import { faUser, faCartShopping, faDollar, faWallet } from '@fortawesome/free-solid-svg-icons';
 import styles from './Dashboard.module.css'
 import TagTransaction from '../../components/TagTransaction/TagTransaction';
-import { getBalanceAdminApi, getFirstEightTransactionAdminApi, getTransactionCount } from '../../apis/transaction';
+import { getBalanceAdminApi, getFirstEightTransactionAdminApi, getNewOrdersApi, getTransactionCount } from '../../apis/order.js';
 import { format } from 'date-fns';
 import { getUserCountAdminApi } from '../../apis/user';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import formatPrice from '../../utils/FormatPrice';
+import ButtonLink from '../../components/ButtonLink/ButtonLink';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 
 function Dashboard() {
     const navigate = useNavigate();
-    const { token } = useSelector(state => state.authn)
-    const [transactions, setTransactions] = useState([]);
-    const [userCount, setUserCount] = useState(0);
-    const [transactionCount, setTransactionCount] = useState(0);
-    const [balance, setBalance] = useState(0);
-    const [earning, setEarning] = useState(0);
-    const loadFirstEightTransactions = () => {
-        getFirstEightTransactionAdminApi(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                navigate('/admin/login')
-                return
+    const { token, isAuthn } = useSelector(state => state.authn)
+    const [isLoading, setIsLoading] = useState(true);
+    const [newOrders, setNewOrders] = useState({
+        countNewOrders: 0,
+        earningInMonth: 0,
+        results: []
+    });
+
+    const getNewOrders = () => {
+        getNewOrdersApi(token).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
             }
-            if (response.status !== 200) {
-                throw new Error('Something wrong');
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
+                throw new Error(response.data.message);
             }
             return response.data;
         }).then((data) => {
-            setTransactions(data)
+            setNewOrders(data)
+            setIsLoading(false);
         }).catch((error) => {
-            console.log(error)
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/admin/signin')
+            }
         })
     }
 
-    const loadTransactionCount = () => {
-        getTransactionCount(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-                return
+    const checkIsLogin = () => {
+        checkIsLoginApi().then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
             }
-            if (response.status !== 200) {
-                throw new Error('Something wrong');
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                throw new Error(response.data.message);
             }
             return response.data;
         }).then((data) => {
-            setTransactionCount(data.totalTransaction)
+            dispatch(authnAction.login(data))
         }).catch((error) => {
-            console.log(error)
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                dispatch(authnAction.logout())
+                navigate('/admin/signin')
+            }
         })
     }
 
-    const loadUserCount = () => {
-        getUserCountAdminApi(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-                return
-            }
-            if (response.status !== 200) {
-                throw new Error('Something wrong');
-            }
-            return response.data;
-        }).then((data) => {
-            setUserCount(data.totalUser)
-        }).catch((error) => {
-            console.log(error)
-        })
-    };
-
-    const getBalance = (token) => {
-        getBalanceAdminApi(token).then((response) => {
-            if (response.status === 403 || response.status === 401) {
-                localStorage.removeItem('bookingAdminToken');
-                window.location.href = '/admin/login'
-                return;
-            };
-            if (response.status !== 200) {
-                throw new Error('Something wrong');
-            };
-            return response.data;
-        }).then((data) => {
-            setBalance(data.balance)
-            setEarning(data.balance)
-        }).catch((error) => {
-            console.log(error)
-        });
-    };
-
-    const renderRoomNumber = useCallback((roomNumbers) => {
-        return roomNumbers.map((roomNumber, index) => {
-            if (index === roomNumbers.length - 1) {
-                return roomNumber;
-            }
-            return roomNumber + ', '
-        })
-    }, [])
-
-    const renderTransactions = (transactions) => {
-        return transactions.map((transaction) => {
-            return <tr key={transaction._id} className='w-100'>
-                <td className='f-1 text-center'>
-                    <input type="checkbox" />
-                </td>
-                <td className='f-5 ps-3'>{transaction._id}</td>
-                <td className='f-3 ps-3'>{transaction.userId.username}</td>
-                <td className='f-5 ps-3'>{transaction.hotelId.name}</td>
-                <td className='f-3 ps-3'>{renderRoomNumber(transaction.rooms)}</td>
-                <td className='f-4 ps-3'>{format(new Date(transaction.dateStart), 'dd/MM/yyyy')} - {format(new Date(transaction.dateEnd), 'dd/MM/yyyy')}</td>
-                <td className='f-2 ps-2'>${transaction.price}</td>
-                <td className='f-3 ps-3'>{transaction.payment}</td>
-                <td className='f-2 ps-3'>
-                    <TagTransaction
-                        title={transaction.status}
+    const renderOrders = (orders) => {
+        return orders.map((order, index) => {
+            return <div key={order._id} className={`${styles['body-row']} bg-row-even d-flex ${index % 2 === 0 ? 'bg-row-even' : ''}`}>
+                <div className={`${styles['id']} f-4  ps-2 text-ellipsis`}>
+                    <p className="text-ellipsis m-0">{order.user}</p>
+                </div>
+                <div className={`${styles['name']} f-4  ps-2 text-ellipsis`}>{order.name}</div>
+                <div className={` f-2  ps-2`}>
+                    {order.phone}
+                </div>
+                <div className={`f-2 t ps-2`}>
+                    {order.address}
+                </div>
+                <div className={`${styles['image']} f-2 ps-2`}>
+                    {formatPrice(order.totalPrice.toString())}
+                </div>
+                <div className={`${styles['image']} text-capitalize f-2  ps-2`}>
+                    {order.delivery.toLowerCase() === 'waiting' ? 'Chưa vận chuyển'
+                        : order.delivery.toLowerCase() === 'Đang vận chuyển' ? 'Delivering' : 'đã giao'}
+                </div>
+                <div className={`${styles['image']} f-2  ps-2`}>
+                    {order.status ? "chưa thanh toán" : "đã thanh toán"}
+                </div>
+                <div className='f-1 text-capitalize ps-2'>
+                    <ButtonLink
+                        title="view"
+                        link={`/admin/order/${order._id}`}
                     />
-                </td>
-            </tr>
+
+                </div>
+            </div>
         })
     }
 
     useEffect(() => {
-        loadFirstEightTransactions();
-        loadTransactionCount();
-        loadUserCount();
-        getBalance(token);
+        if(!isAuthn) {
+            checkIsLogin();
+        } {
+            getNewOrders();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
         <div>
-            <div className={`d-flex gap-2`}>
-                <InfoBoard
-                    title="users"
-                    statistical={0}
-                    styleIcon='icon-user'
-                    icon={faUser}
-                />
-                <InfoBoard
-                    title="transactions"
-                    statistical={0}
-                    styleIcon='icon-order'
-                    icon={faCartShopping}
-                />
-                <InfoBoard
-                    title="earnings"
-                    statistical={`$ 0`}
-                    styleIcon='icon-earning'
-                    icon={faDollar}
-                />
-                <InfoBoard
-                    title="balances"
-                    statistical={`$ 0`}
-                    styleIcon='icon-balance'
-                    icon={faWallet}
-                />
-            </div>
-            <div className='mt-2'>
-                <Card>
-                    <div className='px-2'>
-                        <h3 className={`${styles['title']} pe-3 pt-3 pb-2 mb-0 text-capitalize`}>last transactions</h3>
-                        <div className={`${styles['dashboard-transactions']}`}>
-                            <table className={`${styles['table']} w-100`}>
-                                <thead className='w-100 bg-light'>
-                                    <tr className='w-100'>
-                                        <th className='f-1'>
-                                            <span className='d-flex justify-content-center'>
-                                                <input type="checkbox" />
-                                            </span>
-                                        </th>
-                                        <th className='f-5 text-uppercase ps-3'>
-                                            <span>id</span>
-                                        </th>
-                                        <th className='f-3 text-capitalize ps-3'>
-                                            <span className='pe-5'>user</span>
-                                        </th>
-                                        <th className='f-5 text-capitalize ps-3'>
-                                            <span>hotel</span>
-                                        </th>
-                                        <th className='f-3 text-capitalize ps-3'>
-                                            <span>room</span>
-                                        </th>
-                                        <th className='f-4 ps-2 text-capitalize'>
-                                            <span>date</span>
-                                        </th>
-                                        <th className='f-2 text-capitalize ps-3'>
-                                            <span>price</span>
-                                        </th>
-                                        <th className='f-3 text-capitalize ps-2'>
-                                            <span className=''>payment method</span>
-                                        </th>
-                                        <th className='f-2 text-capitalize ps-3'>
-                                            <span>Status</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr className='w-100'>
-                                        <td className='f-1 text-center'>
-                                            <input type="checkbox" />
-                                        </td>
-                                        <td className='f-5 ps-3'>{ }</td>
-                                        <td className='f-3 ps-3'>{ }</td>
-                                        <td className='f-5 ps-3'>{ }</td>
-                                        <td className='f-3 ps-3'>{ }</td>
-                                        <td className='f-4 ps-3'>{ }</td>
-                                        <td className='f-2 ps-2'>${ }</td>
-                                        <td className='f-3 ps-3'>{ }</td>
-                                        <td className='f-2 ps-3'>
-                                            {/* <TagTransaction
-                                            title={transaction.status}
-                                        /> */}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            {/* <div className={`${styles['paging']} mt-5 d-flex justify-content-end px-5 py-3`}>
-                                <span className='me-4'>1-8 of 8 </span>
-                                <div className=''>
-                                    <FontAwesomeIcon icon={faChevronLeft} className={`${styles['chevron-icon']}  pe-3`} />
-                                    <FontAwesomeIcon icon={faChevronRight} className={`${styles['chevron-icon']}`} />
-                                </div>
-                            </div> */}
+            {
+                isAuthn ? (
+                    isLoading ? <LoadingSpinner /> : <>
+                        <div className={`d-flex gap-2`}>
+                            <InfoBoard
+                                title="users"
+                                statistical={0}
+                                styleIcon='icon-user'
+                                icon={faUser}
+                            />
+                            <InfoBoard
+                                title="Earnings of Month"
+                                statistical={`${formatPrice(newOrders.earningInMonth.toString())} VND`}
+                                styleIcon='icon-earning'
+                                icon={faDollar}
+                            />
+                            <InfoBoard
+                                title="New Order"
+                                statistical={newOrders.countNewOrders}
+                                styleIcon='icon-order'
+                                icon={faCartShopping}
+                            />
                         </div>
-                    </div>
-                </Card>
-            </div >
-        </div >
+                        <div className='mt-2'>
+                            <Card>
+                                <div className='px-2'>
+                                    <h3 className={`${styles['title']} pe-3 pt-3 pb-2 mb-0 text-capitalize`}>last transactions</h3>
+                                    <div className={`${styles['table']}`}>
+                                        <div className={`${styles['header-table']}`}>
+                                            <div className={`${styles['header-row']} d-flex`}>
+                                                <div className='f-4 ps-2 text-ellipsis'>ID User</div>
+                                                <div className='f-4 text-capitalize ps-2 text-ellipsis'>name</div>
+                                                <div className='f-2 text-capitalize ps-2'>phone</div>
+                                                <div className='f-2 text-capitalize ps-2'>address</div>
+                                                <div className='f-2 text-capitalize ps-2'>total</div>
+                                                <div className='f-2 text-capitalize ps-2'>delivery</div>
+                                                <div className='f-2 text-capitalize ps-2'>status</div>
+                                                <div className='f-1 text-capitalize ps-2 border-0'>detail</div>
+                                            </div>
+                                        </div>
+                                        <div className={`${styles['body-table']}`}>
+                                            {renderOrders(newOrders.results)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    </>
+                ) : <></>
+            }
+        </div>
     );
 }
 

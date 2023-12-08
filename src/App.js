@@ -25,7 +25,7 @@ const adminRouters = [
   {
     name: "Admin",
     path: '/',
-    element: <Category />
+    element: <Dashboard />
   },
   {
     name: "Admin",

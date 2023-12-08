@@ -6,7 +6,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { disableUserAdminApi, enableUserAdminApi, getAllUserAdminApi, getUsersAdminApi } from '../../apis/user';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import UpdateButton from '../../components/UpdateButton/UpdateButton';
+import ButtonLink from '../../components/ButtonLink/ButtonLink';
 import DeleteButton from '../../components/DeleteButton/DeleteButton';
 import { checkIsLoginApi } from '../../apis/authn';
 import { authnAction } from '../../stores/slice/authn';

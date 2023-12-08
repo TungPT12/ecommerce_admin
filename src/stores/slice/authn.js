@@ -7,7 +7,6 @@ const initAuthn = {
     fullName: '',
     isAdmin: '',
     phoneNumber: '',
-    username: '',
     avatar: '',
     isAuthn: false,
 }
@@ -25,8 +24,8 @@ const authnSlice = createSlice({
             state.fullName = user.fullName;
             state.isAdmin = user.isAdmin;
             state.phoneNumber = user.phoneNumber;
-            state.username = user.username;
             state.avatar = user.avatar;
+            state.isCounselor = user.isCounselor
         },
         logout(state) {
             state.token = '';
@@ -35,21 +34,20 @@ const authnSlice = createSlice({
             state.fullName = '';
             state.isAdmin = '';
             state.phoneNumber = '';
-            state.username = '';
             state.avatar = '';
             state.isAuthn = false;
         },
-        setUser(state, payload) {
-            const user = payload.payload;
-            state.isAuthn = true;
-            state._id = user._id;
-            state.email = user.email;
-            state.fullName = user.fullName;
-            state.isAdmin = user.isAdmin;
-            state.phoneNumber = user.phoneNumber;
-            state.username = user.username;
-            state.avatar = user.avatar;
-        }
+        // setUser(state, payload) {
+        //     const user = payload.payload;
+        //     state.isAuthn = true;
+        //     state._id = user._id;
+        //     state.email = user.email;
+        //     state.fullName = user.fullName;
+        //     state.isAdmin = user.isAdmin;
+        //     state.phoneNumber = user.phoneNumber;
+        //     state.username = user.username;
+        //     state.avatar = user.avatar;
+        // }
     }
 })
 

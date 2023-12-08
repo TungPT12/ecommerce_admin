@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import UpdateButton from '../../components/UpdateButton/UpdateButton';
+import ButtonLink from '../../components/ButtonLink/ButtonLink';
 import DeleteButton from '../../components/DeleteButton/DeleteButton';
 import { deleteCategoryAdminApi, getCategoriesAdminApi } from '../../apis/category';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
@@ -139,8 +139,9 @@ function Category() {
                     <img className="w-50" alt={category.name} src={`${process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${category.image}`} />
                 </div>
                 <div className='f-2 text-capitalize ps-3'>
-                    <UpdateButton
+                    <ButtonLink
                         link={`/admin/category/edit/${category._id}`}
+                        title="update"
                     />
                     <DeleteButton
                         className="ms-1"
@@ -194,7 +195,7 @@ function Category() {
                                 </div>
                             </div>
                         </div>
-                    </div >
+                    </div>
                 </Card >) : <></>
             }
         </div>

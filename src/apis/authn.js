@@ -14,7 +14,7 @@ const signin = async (email, password) => {
 
 const checkIsLoginApi = async () => {
     try {
-        const response = await axiosAdminInstance.post('/is-login')
+        const response = await axiosAdminInstance.post('/access-token')
         return response
     } catch (error) {
         return error.response;
