@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
 import styles from './User.module.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { disableUserAdminApi, enableUserAdminApi, getAllUserAdminApi, getUsersAdminApi } from '../../apis/user';
+import { getUsersAdminApi } from '../../apis/user';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import ButtonLink from '../../components/ButtonLink/ButtonLink';
 import DeleteButton from '../../components/DeleteButton/DeleteButton';
 import { checkIsLoginApi } from '../../apis/authn';
 import { authnAction } from '../../stores/slice/authn';
@@ -15,7 +12,6 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 function Users() {
     const { token, isAuthn } = useSelector(state => state.authn);
     const [users, setUsers] = useState([]);
-    const [isLoadingSpinnerModal, setIsLoadingSpinnerModal] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     // const [totalPage, setTotalPage] = useState(1)
     // const [page, setPage] = useState(1)
@@ -125,11 +121,7 @@ function Users() {
                     <p className="text-ellipsis m-0">{user._id}</p>
                 </div>
                 <div className={`${styles['name']} f-3 text-capitalize ps-2 text-break`}>{user.fullName}</div>
-                <div className={`${styles['email']} f-3 text-capitalize ps-2 text-break`}>{user.email}</div>
-                {/* <div className={`${styles['image']} f-2 text-uppercase ps-2`}>
-                                        <img className="w-50" alt={product.name} src={`${product.images[0].includes("http") ? '' : process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} />
-                                        <img className="w-50" alt={product.name} src={`${product.images[0].includes("http") ? '' : process.env.REACT_APP_API_ENDPOINT_URL_IMAGE}${product.images[0]}`} />
-                                    </div> */}
+                <div className={`${styles['email']} f-3 ps-2 text-break`}>{user.email}</div>
                 <div className={`${styles['phone']} f-2 text-lowercase ps-2`}>
                     <p className="text-ellipsis m-0">{user.phoneNumber}</p>
                 </div>

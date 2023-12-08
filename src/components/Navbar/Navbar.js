@@ -48,7 +48,7 @@ function Navbar() {
                     <FontAwesomeIcon icon={faUser} className={`${styles['icon']} f-1`} />
                     <span className={`${styles['tab-name']} text-capitalize f-5`}>users</span>
                 </NavLink>
-                <NavLink to="/admin/rooms" className={({ isActive }) => {
+                <NavLink to="/admin/orders" className={({ isActive }) => {
                     let defaultClass = `py-1 d-flex text-decoration-none align-items-center mb-2`;
                     return isActive ? `${defaultClass} ${styles['isACtiveTab']}` : defaultClass
                 }}>

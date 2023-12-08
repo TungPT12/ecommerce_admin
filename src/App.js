@@ -3,24 +3,20 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-
-
+import { useSelector } from "react-redux";
 import './index.css'
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Header from "./components/Header/Header";
 import MainPage from "./pages/MainPage/MainPage";
-import { useEffect } from "react";
-import { authnAction } from "./stores/slice/authn";
 import Category from "./pages/Category/Category";
 import AddCategory from "./pages/Category/AddCategory/AddCategory";
 import SigninPage from "./pages/SigninPage/SigninPage";
-import { checkIsLoginApi } from "./apis/authn";
 import UpdateCategory from "./pages/Category/UpdateCategory/UpdateCategory";
 import Product from "./pages/Product/Product";
 import AddProduct from "./pages/Product/AddProduct/AddProduct";
 import UpdateProduct from "./pages/Product/UpdateProduct/UpdateProduct";
 import Users from "./pages/User/Users";
+import Order from "./pages/Order/Order";
 const adminRouters = [
   {
     name: "Admin",
@@ -72,11 +68,11 @@ const adminRouters = [
     path: '/admin/users',
     element: <Users />
   },
-  // {
-  //   name: "Rooms",
-  //   path: '/admin/rooms',
-  //   element: <Rooms />
-  // },
+  {
+    name: "Order",
+    path: '/admin/orders',
+    element: <Order />
+  },
   // {
   //   name: "Rooms",
   //   path: '/admin/room/add',

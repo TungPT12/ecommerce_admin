@@ -23,6 +23,10 @@
     border-right: none
 }
 
+.body-row:last-child {
+    border-bottom: none;
+}
+
 .body-row {
     font-size: 14px;
     border-bottom: 1px solid #d9d6d6c7;
@@ -35,10 +39,4 @@
     color: #7c7c7c;
     font-weight: 400;
     padding: 0.5rem 0;
-}
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    margin: 0;
-    -webkit-appearance: none;
 }
