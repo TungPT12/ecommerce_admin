@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { authnAction } from '../../stores/slice/authn.js';
 import { checkIsLoginApi } from '../../apis/authn.js';
+import { getUserCountAdminApi } from '../../apis/user.js';
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -22,6 +23,7 @@ function Dashboard() {
         earningInMonth: 0,
         results: []
     });
+    const [count, setCount] = useState(0)
 
     const getNewOrders = () => {
         getNewOrdersApi(token).then((response) => {
@@ -41,6 +43,35 @@ function Dashboard() {
             return response.data;
         }).then((data) => {
             setNewOrders(data)
+            setIsLoading(false);
+        }).catch((error) => {
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                navigate('/admin/signin')
+            }
+        })
+    }
+
+    const getCountUsers = () => {
+        getUserCountAdminApi(token).then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                dispatch(authnAction.logout());
+                throw new Error(response.data.message);
+            }
+            return response.data;
+        }).then((data) => {
+            console.log(data)
+            setCount(data.totalUser)
             setIsLoading(false);
         }).catch((error) => {
             if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
@@ -117,6 +148,7 @@ function Dashboard() {
             checkIsLogin();
         } else {
             getNewOrders();
+            getCountUsers();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -128,7 +160,7 @@ function Dashboard() {
                         <div className={`d-flex gap-2`}>
                             <InfoBoard
                                 title="users"
-                                statistical={0}
+                                statistical={count}
                                 styleIcon='icon-user'
                                 icon={faUser}
                             />

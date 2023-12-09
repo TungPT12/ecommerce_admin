@@ -13,8 +13,6 @@ function Users() {
     const { token, isAuthn } = useSelector(state => state.authn);
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    // const [totalPage, setTotalPage] = useState(1)
-    // const [page, setPage] = useState(1)
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const checkIsLogin = () => {
@@ -75,44 +73,6 @@ function Users() {
         })
     }
 
-    // const disableUser = (id) => {
-    //     disableUserAdminApi(token, id).then((response) => {
-    //         if (response.status === 403 || response.status === 401) {
-    //             localStorage.removeItem('bookingAdminToken');
-    //             window.location.href = '/admin/login'
-    //         }
-    //         if (response.status !== 200) {
-    //             throw new Error(response.data.message);
-    //         }
-    //     }).then(() => {
-    //         loadUser()
-    //         alert('Successfully')
-    //     }).catch((error) => {
-    //         loadUser();
-    //         alert(error.message);
-    //         console.log(error)
-    //     })
-    // }
-
-    // const enableUser = (id) => {
-    //     enableUserAdminApi(token, id).then((response) => {
-    //         if (response.status === 403 || response.status === 401) {
-    //             localStorage.removeItem('bookingAdminToken');
-    //             window.location.href = '/admin/login'
-    //         }
-    //         if (response.status !== 200) {
-    //             throw new Error(response.data.message);
-    //         }
-    //     }).then(() => {
-    //         loadUser()
-    //         alert('Successfully')
-    //     }).catch((error) => {
-    //         loadUser();
-    //         alert(error.message);
-    //         console.log(error)
-    //     })
-    // }
-
     const renderUsers = (users) => {
         return users.map((user, index) => {
             return <div key={user._id} className={`${styles['body-row']} d-flex ${index % 2 === 0 ? 'bg-row-even' : ''}`}>
@@ -125,10 +85,10 @@ function Users() {
                 <div className={`${styles['phone']} f-2 text-lowercase ps-2`}>
                     <p className="text-ellipsis m-0">{user.phoneNumber}</p>
                 </div>
-                <div className='f-1 text-capitalize ps-2'>
+                {/*{<div className='f-1 text-capitalize ps-2'>
                     <DeleteButton
                         className="ms-1" />
-                </div>
+                </div>} */}
             </div>
         })
     }
@@ -163,7 +123,7 @@ function Users() {
                                             <div className='f-3 text-capitalize ps-2 text-ellipsis'>full name</div>
                                             <div className='f-3 text-capitalize ps-2 text-ellipsis'>email</div>
                                             <div className='f-2 text-capitalize ps-2 text-ellipsis'>phone</div>
-                                            <div className='f-1 text-capitalize ps-2'>Edit</div>
+                                            {/* <div className='f-1 text-capitalize ps-2'>Edit</div> */}
                                         </div>
                                     </div>
                                     <div className={`${styles['body-table']}`}>

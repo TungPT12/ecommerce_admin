@@ -8,15 +8,6 @@ const getUsersAdminApi = async (token) => {
         return error.response;
     }
 }
-// const getUsersAdminApi = async (token, { page }) => {
-//     try {
-//         const router = '/users?page=' + (page ? page : 1);
-//         const response = await axiosAdminInstance.get(router, setHeaders(token));
-//         return response;
-//     } catch (error) {
-//         return error.response;
-//     }
-// }
 
 const createUserAdminApi = async (token, user) => {
     try {
@@ -47,7 +38,7 @@ const enableUserAdminApi = async (token, id) => {
 
 const getUserCountAdminApi = async (token) => {
     try {
-        const response = await axiosAdminInstance.get(`/users/count`, setHeaders(token));
+        const response = await axiosAdminInstance.get(`/user/count`, setHeaders(token));
         return response;
     } catch (error) {
         return error.response;
