@@ -1,0 +1,16 @@
+.chat {
+    background-color: #f3f6f9;
+    height: 100vh;
+}
+
+.body-chat {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.input-message {
+    height: 10%;
+    border: 1px solid #000;
+    border-left: none;
+    outline: none;
+}

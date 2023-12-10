@@ -17,6 +17,7 @@ import AddProduct from "./pages/Product/AddProduct/AddProduct";
 import UpdateProduct from "./pages/Product/UpdateProduct/UpdateProduct";
 import Users from "./pages/User/Users";
 import Order from "./pages/Order/Order";
+import Chat from "./pages/Chat/Chat";
 const adminRouters = [
   {
     name: "Admin",
@@ -73,66 +74,6 @@ const adminRouters = [
     path: '/admin/orders',
     element: <Order />
   },
-  // {
-  //   name: "Rooms",
-  //   path: '/admin/room/add',
-  //   element: <AddRoom />
-  // },
-  // {
-  //   name: "Rooms",
-  //   path: '/admin/room/edit/:id',
-  //   element: <UpdateRoom />
-  // },
-  // {
-  //   name: "Transactions",
-  //   path: '/admin/transactions',
-  //   element: <Transactions />
-
-  // },
-  // {
-  //   name: "Area",
-  //   path: '/admin/areas',
-  //   element: <Area />
-
-  // },
-  // {
-  //   name: "Area",
-  //   path: '/admin/area/edit/:id',
-  //   element: <UpdateArea />
-
-  // },
-  // {
-  //   name: "Area",
-  //   path: '/admin/area/add',
-  //   element: <AddArea />
-  // },
-  // {
-  //   name: "Users",
-  //   path: '/admin/users',
-  //   element: <Users />
-  // },
-  // {
-  //   name: "Users",
-  //   path: '/admin/user/add',
-  //   element: <AddUser />
-
-  // },
-  // {
-  //   name: "Types",
-  //   path: '/admin/types',
-  //   element: <Type />
-
-  // },
-  // {
-  //   name: "Types",
-  //   path: '/admin/type/add',
-  //   element: <AddType />
-  // },
-  // {
-  //   name: "Types",
-  //   path: '/admin/type/edit/:id',
-  //   element: <UpdateType />
-  // },
 ]
 
 function App() {
@@ -148,14 +89,15 @@ function App() {
 
   return (
     <BrowserRouter>
-      {isAuthn ? <Header
+      {/* {isAuthn ? <Header
         username={username}
         email={email}
         avatar={avatar}
-      /> : <></>}
+      /> : <></>} */}
       <Routes>
         {renderRouter(adminRouters, isAuthn)}
         <Route path='/admin/signin' element=<SigninPage /> />
+        <Route path='/admin/chat' element=<Chat /> />
       </Routes>
     </BrowserRouter>
   );
