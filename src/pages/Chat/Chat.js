@@ -11,6 +11,7 @@ function Chat() {
 
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
+    const [roomId, setRoomId] = useState('');
 
     const sendMessage = (message, roomId) => {
         sendMessageApi(message, roomId).then((response) => {
@@ -21,16 +22,15 @@ function Chat() {
     }
 
     useEffect(() => {
-        socket.on('12345', message => {
-            // const newMessage = message.message)
+        socket.on(roomId, message => {
             setMessages([...messages, message]);
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [socket])
+    }, [socket, roomId])
 
-    useEffect(() => {
-        console.log(messages)
-    }, [messages])
+    // useEffect(() => {
+    //     console.log(messages)
+    // }, [messages])
 
     // const sendMessage = () => {
     //     const message = inputElement.current.outerText;
@@ -50,19 +50,23 @@ function Chat() {
             </div>
             <div className={`d- ${styles['body-chat']} w-100 d-flex`}>
                 <div className='f-1 h-100 overflow-auto'>
-                    <ChatListUser />
+                    <ChatListUser setRoomId={setRoomId} />
                 </div>
                 <div className='f-4 h-100'>
-                    <ChatMessage messages={messages} />
-                    <form onSubmit={(e) => {
-                        e.preventDefault();
-                        sendMessage(message, '12345', "12345");
-                    }} className={`d-flex ${styles['wrapper-input-message']} p-2`}>
-                        <input className={`${styles['input-message']} w-100`} value={message} onChange={(e) => {
-                            setMessage(e.target.value)
-                        }} />
-                        <button>Send</button>
-                    </form>
+                    {
+                        roomId ? <>
+                            <ChatMessage messages={messages} />
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                sendMessage(message, '12345', "12345");
+                            }} className={`d-flex ${styles['wrapper-input-message']} p-2`}>
+                                <input className={`${styles['input-message']} w-100`} value={message} onChange={(e) => {
+                                    setMessage(e.target.value)
+                                }} />
+                                <button>Send</button>
+                            </form>
+                        </> : <></>
+                    }
                 </div>
             </div>
         </div>
