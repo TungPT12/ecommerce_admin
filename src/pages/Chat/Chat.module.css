@@ -3,9 +3,12 @@
     height: 100vh;
 }
 
+.header-chat {
+    height: 10%;
+}
+
 .body-chat {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    height: 90%;
 }
 
 .input-message {

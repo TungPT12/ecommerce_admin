@@ -1,5 +1,18 @@
-.message {
+.chat-message {
     height: 90%;
     border-top: 1px solid #000;
     border-right: 1px solid #000;
+}
+
+.client .message {
+    background-color: #e4fbf8;
+}
+
+.admin .message {
+    background-color: #eef5ff;
+}
+
+.message {
+    border: none;
+    max-width: 40%;
 }

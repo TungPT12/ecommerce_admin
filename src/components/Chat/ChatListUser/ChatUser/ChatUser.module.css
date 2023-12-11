@@ -1,0 +1,12 @@
+.chat-user {
+    border-bottom: 1px solid #000;
+}
+
+.chat-user:last-child {
+    border-bottom: none;
+}
+
+/* .chat-user:first-child {
+    border-top: 1px solid #000;
+    ;
+} */
