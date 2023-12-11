@@ -5,7 +5,7 @@ const sendMessageApi = async (message, roomId, userId) => {
         const response = await axiosInstance.post('/sendMessage', {
             message: message,
             roomId: roomId,
-            userId: userId,
+            isClient: false,
         });
         return response
     } catch (error) {

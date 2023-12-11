@@ -11,9 +11,13 @@
     height: 90%;
 }
 
-.input-message {
+.wrapper-input-message {
     height: 10%;
     border: 1px solid #000;
     border-left: none;
-    outline: none;
+}
+
+.input-message {
+        outline: none;
+        border: none;
 }
