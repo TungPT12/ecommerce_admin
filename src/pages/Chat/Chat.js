@@ -22,6 +22,7 @@ function Chat() {
     }
 
     useEffect(() => {
+        console.log(roomId)
         socket.on(roomId, message => {
             setMessages([...messages, message]);
         })
@@ -58,7 +59,7 @@ function Chat() {
                             <ChatMessage messages={messages} />
                             <form onSubmit={(e) => {
                                 e.preventDefault();
-                                sendMessage(message, '12345', "12345");
+                                sendMessage(message, roomId);
                             }} className={`d-flex ${styles['wrapper-input-message']} p-2`}>
                                 <input className={`${styles['input-message']} w-100`} value={message} onChange={(e) => {
                                     setMessage(e.target.value)
