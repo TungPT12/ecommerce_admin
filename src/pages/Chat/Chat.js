@@ -6,7 +6,8 @@ import { getRoomChatApi, sendMessageApi } from '../../apis/chat';
 import { useEffect, useRef, useState } from 'react';
 import { io } from "socket.io-client";
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 function Chat() {
     const socket = io('http://localhost:5000');
 
@@ -59,7 +60,7 @@ function Chat() {
             </div>
             <div className={`${styles['body-chat']} w-100 d-flex`}>
                 <div className='f-1 h-100 overflow-auto'>
-                    <ChatListUser setRoomId={setRoomId} setIsLoading={setIsLoading} />
+                    <ChatListUser socket={socket} setRoomId={setRoomId} setIsLoading={setIsLoading} />
                 </div>
                 <div className='f-4 h-100'>
                     <div className={`${styles['wrapper-message']}`}>
@@ -68,18 +69,20 @@ function Chat() {
                                 roomId ? <>
                                     <ChatMessage messages={messages} />
                                     <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    sendMessage(message, roomId);
-                                }} className={`d-flex ${styles['wrapper-input-message']} p-2`}>
-                            <input className={`${styles['input-message']} w-100`} value={message} onChange={(e) => {
-                                    setMessage(e.target.value)}} />
-                            <button>Send</button>
-                    </form>
+                                        e.preventDefault();
+                                        sendMessage(message, roomId);
+                                    }} className={`d-flex ${styles['wrapper-input-message']} p-2`}>
+                                        <input placeholder='Type message' className={`${styles['input-message']} ps-2 pe-1 w-100`} value={message} onChange={(e) => {
+                                            setMessage(e.target.value)
+                                        }} />
+                                        <button className={`${styles['send-button']} mx-2`}>
+                                            <FontAwesomeIcon className={`${styles['icon-plane-paper']} text-white`} icon={faPaperPlane} />
+                                        </button>
+                                    </form>
                                 </> : <></>
                             )
                         }
                     </div>
-                    
                 </div>
             </div>
         </div>

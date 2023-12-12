@@ -27,3 +27,11 @@
     border-top: 1px solid #e3dfdf;
     border-bottom: 1px solid #e3dfdf;
 }
+
+.send-button {
+    background-color: #48b0f7;
+    border: none;
+    border-radius: 50%;
+        width: 45px;
+            height: 45px;
+}

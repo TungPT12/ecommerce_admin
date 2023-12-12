@@ -4,7 +4,7 @@ import ChatUser from './ChatUser/ChatUser';
 import { useEffect, useState } from 'react';
 import { getRoomsChatApi } from '../../../apis/chat';
 
-function ChatListUser({ setRoomId, setIsLoading }) {
+function ChatListUser({ socket, setRoomId, setIsLoading }) {
 
     const [roomsChat, setRoomsChat] = useState([]);
 
@@ -18,6 +18,13 @@ function ChatListUser({ setRoomId, setIsLoading }) {
 
     useEffect(() => {
         getRoomsChat();
+    }, []);
+
+    useEffect(() => {
+        socket.on('newRooms', newRoom => {
+            setRoomsChat([...roomsChat, newRoom])
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const renderCardChatUser = (roomsChat) => {
