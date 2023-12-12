@@ -13,11 +13,17 @@
 
 .wrapper-input-message {
     height: 10%;
-    border: 1px solid #000;
-    border-left: none;
+    border-top: 1px solid #e3dfdf;
 }
 
 .input-message {
-        outline: none;
-        border: none;
+    outline: none;
+    border: none;
+}
+
+.wrapper-message {
+    height: 100%;
+    border-right: 1px solid #e3dfdf;
+    border-top: 1px solid #e3dfdf;
+    border-bottom: 1px solid #e3dfdf;
 }

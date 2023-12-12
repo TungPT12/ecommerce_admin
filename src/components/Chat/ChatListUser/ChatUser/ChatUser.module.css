@@ -1,5 +1,12 @@
 .chat-user {
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #e3dfdf;
+    cursor: pointer;
+     background-color: #fff;
+}
+
+.chat-user:hover {
+    background-color: #e3dfdf;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .chat-user:last-child {

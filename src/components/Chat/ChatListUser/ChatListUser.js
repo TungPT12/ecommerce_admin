@@ -4,7 +4,7 @@ import ChatUser from './ChatUser/ChatUser';
 import { useEffect, useState } from 'react';
 import { getRoomsChatApi } from '../../../apis/chat';
 
-function ChatListUser({ setRoomId }) {
+function ChatListUser({ setRoomId, setIsLoading }) {
 
     const [roomsChat, setRoomsChat] = useState([]);
 
@@ -26,6 +26,7 @@ function ChatListUser({ setRoomId }) {
                 user={roomChat.user}
                 id={roomChat._id}
                 setRoomId={setRoomId}
+                setIsLoading={setIsLoading}
             />
         })
     }

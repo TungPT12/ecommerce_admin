@@ -22,8 +22,18 @@ const getRoomsChatApi = async () => {
     }
 }
 
+const getRoomChatApi = async (roomId) => {
+    try {
+        const response = await axiosInstance.get(`/room/${roomId}`);
+        return response
+    } catch (error) {
+        return error.response;
+    }
+}
+
 
 export {
     sendMessageApi,
     getRoomsChatApi,
+    getRoomChatApi,
 }

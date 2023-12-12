@@ -36,7 +36,9 @@ function ChatMessage({ messages }) {
     return (
         <div className={`bg-white w-100 ${styles['chat-message']} overflow-auto p-2`}>
             {renderMessages(messages)}
+
         </div>
+
     );
 }
 
