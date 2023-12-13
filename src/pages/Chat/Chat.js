@@ -12,9 +12,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { authnAction } from '../../stores/slice/authn';
 import { useNavigate } from 'react-router-dom';
 import { checkIsLoginApi } from '../../apis/authn';
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+
 function Chat() {
     const socket = io('http://localhost:5000');
-    const { token, isAuthn, isAdmin } = useSelector(state => state.authn)
+    const { avatar, email, fullName, isAuthn, isAdmin } = useSelector(state => state.authn)
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -123,9 +125,26 @@ function Chat() {
         <div style={{
             height: isAdmin ? "92vh" : "100vh",
         }} className={`${styles['chat']} d-flex flex-column  p-4 `}>
-            <div className={`${styles['header-chat']} h-fit-content`}>
-                <h4>Chat</h4>
-                <p>apps / chat</p>
+            <div className={`${styles['header-chat']} justify-content-between d-flex h-fit-content`}>
+                <div>
+                    <h4>Chat</h4>
+                    <p>apps / chat</p>
+                </div>
+                <div className='d-flex justify-content-end align-items-center h-100'>
+                    <div className='d-flex h-100 align-items-center'>
+                        <div className={`me-1`}>
+                            <p className={`m-0 ${styles['full-name']} text-end`}>{fullName}</p>
+                            <p className={`m-0 ${styles['email']}`}>{email}</p>
+                        </div>
+                        <div className='h-50 '>
+                            <img className={`h-100 ${styles['avatar']}`} src={avatar} alt="" />
+                        </div>
+                    </div>
+                    <button className={`ms-3 ${styles['logout']}`}>
+                        <FontAwesomeIcon icon={faArrowRightFromBracket} className={`${styles['icon']} f-1`} />
+                        Logout
+                    </button>
+                </div>
             </div>
             <div className={`${styles['body-chat']} w-100 d-flex`}>
                 <div className='f-1 h-100 overflow-auto'>
