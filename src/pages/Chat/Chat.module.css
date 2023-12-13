@@ -1,6 +1,5 @@
 .chat {
     background-color: #f3f6f9;
-    height: 100vh;
 }
 
 .header-chat {
@@ -32,6 +31,6 @@
     background-color: #48b0f7;
     border: none;
     border-radius: 50%;
-        width: 45px;
-            height: 45px;
+    width: 45px;
+    height: 45px;
 }

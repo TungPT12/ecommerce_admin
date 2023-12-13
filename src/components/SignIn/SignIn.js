@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './SignIn.module.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { signin } from '../../apis/authn';
+import { checkIsLoginApi, signin } from '../../apis/authn';
 import { authnAction } from '../../stores/slice/authn';
 function SignIn() {
 
@@ -12,13 +12,41 @@ function SignIn() {
     const [wrongUser, setWrongUser] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const checkIsLogin = () => {
+        checkIsLoginApi().then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                throw new Error(response.data.message);
+            }
+            return response.data;
+        }).then((data) => {
+            dispatch(authnAction.login(data))
+        }).catch((error) => {
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                dispatch(authnAction.logout())
+                navigate('/admin/signin')
+            }
+        })
+    }
+    useEffect(() => {
+        if (isAuthn) {
+            navigate('/');
+        } else {
+            checkIsLogin();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthn])
 
-    // useEffect(() => {
-    //     if (isAuthn) {
-    //         navigate('/');
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [isAuthn])
     // const onSubmitLogin = async (e) => {
     //     try {
     //         const response = await signin(email, password);

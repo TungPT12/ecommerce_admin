@@ -21,7 +21,17 @@ const checkIsLoginApi = async () => {
     }
 }
 
+const logoutApi = async () => {
+    try {
+        const response = await axiosAdminInstance.post('/logout')
+        return response
+    } catch (error) {
+        return error.response;
+    }
+}
+
 export {
     signin,
-    checkIsLoginApi
+    checkIsLoginApi,
+    logoutApi,
 }

@@ -78,6 +78,9 @@ p {
   margin: 0;
 }
 
+.font-size-14px {
+  font-size: 14px;
+}
 
 .warning-message {
   color: #ff0000b5;
@@ -99,6 +102,6 @@ p {
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
-	margin: 0;
-	-webkit-appearance: none;
+  margin: 0;
+  -webkit-appearance: none;
 }

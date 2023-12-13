@@ -8,8 +8,15 @@ import { io } from "socket.io-client";
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { authnAction } from '../../stores/slice/authn';
+import { useNavigate } from 'react-router-dom';
+import { checkIsLoginApi } from '../../apis/authn';
 function Chat() {
     const socket = io('http://localhost:5000');
+    const { token, isAuthn, isAdmin } = useSelector(state => state.authn)
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
@@ -76,15 +83,46 @@ function Chat() {
     //         console.log(error)
     //     })
     // };
+    const checkIsLogin = () => {
+        checkIsLoginApi().then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                throw new Error(response.data.message);
+            }
+            return response.data;
+        }).then((data) => {
+            dispatch(authnAction.login(data))
+        }).catch((error) => {
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                dispatch(authnAction.logout())
+                navigate('/admin/signin')
+            }
+        })
+    }
 
     useEffect(() => {
-        getRoomsChat();
-        setIsLoadingRoomsChat(false);
+        if (isAuthn) {
+            getRoomsChat();
+            setIsLoadingRoomsChat(false);
+        } else {
+            checkIsLogin();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-
     return (
-        <div className={`${styles['chat']} d-flex flex-column  p-4 `}>
+        <div style={{
+            height: isAdmin ? "92vh" : "100vh",
+        }} className={`${styles['chat']} d-flex flex-column  p-4 `}>
             <div className={`${styles['header-chat']} h-fit-content`}>
                 <h4>Chat</h4>
                 <p>apps / chat</p>

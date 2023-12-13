@@ -2,15 +2,39 @@ import { faBox, faUser, faCartShopping, faMessage, faDashboard, faArrowRightFrom
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styles from './Navbar.module.css';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { authnAction } from '../../stores/slice/authn';
+import { logoutApi } from '../../apis/authn';
 
 function Navbar() {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const logout = () => {
-        dispatch(authnAction.logout())
-        window.location.href = '/admin/login'
+        logoutApi().then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                throw new Error(response.data.message);
+            }
+            dispatch(authnAction.logout())
+            navigate('/admin/signin')
+        }).catch((error) => {
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                dispatch(authnAction.logout())
+                navigate('/admin/signin')
+            }
+        })
+
     }
 
     return (

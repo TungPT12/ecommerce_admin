@@ -28,13 +28,13 @@ const authnSlice = createSlice({
             state.isCounselor = user.isCounselor
         },
         logout(state) {
-            state.token = '';
-            state._id = '';
-            state.email = '';
-            state.fullName = '';
-            state.isAdmin = '';
-            state.phoneNumber = '';
-            state.avatar = '';
+            // state.token = '';
+            // state._id = '';
+            // state.email = '';
+            // state.fullName = '';
+            // state.isAdmin = '';
+            // state.phoneNumber = '';
+            // state.avatar = '';
             state.isAuthn = false;
         },
         // setUser(state, payload) {

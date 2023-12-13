@@ -21,11 +21,6 @@ import Chat from "./pages/Chat/Chat";
 const adminRouters = [
   {
     name: "Admin",
-    path: '/',
-    element: <Dashboard />
-  },
-  {
-    name: "Admin",
     path: '/admin',
     element: <Dashboard />
   },
@@ -74,10 +69,15 @@ const adminRouters = [
     path: '/admin/orders',
     element: <Order />
   },
+  {
+    name: "Chat",
+    path: '/admin/chat',
+    element: <Chat />
+  },
 ]
 
 function App() {
-  const { isAuthn, username, email, avatar } = useSelector(state => state.authn);
+  const { isAuthn, username, email, avatar, isCounselor, isAdmin } = useSelector(state => state.authn);
   const renderRouter = (listRouter) => {
     return listRouter.map((router) => {
       return <Route key={router.path} path={router.path} element={<MainPage>
@@ -87,17 +87,23 @@ function App() {
     })
   }
 
+  console.log(isAdmin)
+  console.log(isAuthn)
   return (
     <BrowserRouter>
-      {/* {isAuthn ? <Header
+      {isAuthn && isAdmin ? <Header
         username={username}
         email={email}
         avatar={avatar}
-      /> : <></>} */}
+      /> : <></>}
       <Routes>
         {renderRouter(adminRouters, isAuthn)}
         <Route path='/admin/signin' element=<SigninPage /> />
-        <Route path='/admin/chat' element=<Chat /> />
+        <Route path='/' element={isAuthn ? (
+          isAdmin ? <MainPage>
+            <Dashboard />
+          </MainPage> : <Chat />
+        ) : <SigninPage />} />
       </Routes>
     </BrowserRouter>
   );

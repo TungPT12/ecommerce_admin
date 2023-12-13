@@ -70,7 +70,6 @@ function Dashboard() {
             }
             return response.data;
         }).then((data) => {
-            console.log(data)
             setCount(data.totalUser)
             setIsLoading(false);
         }).catch((error) => {

@@ -1,8 +1,7 @@
 import React from 'react';
 import styles from './ChatListUser.module.css'
 import ChatUser from './ChatUser/ChatUser';
-import { useEffect, useState } from 'react';
-import { getRoomsChatApi } from '../../../apis/chat';
+import { useEffect } from 'react';
 
 function ChatListUser({ socket, setRoomId, roomsChat, setRoomsChat, setIsLoading, setUser }) {
 
@@ -30,6 +29,7 @@ function ChatListUser({ socket, setRoomId, roomsChat, setRoomsChat, setIsLoading
     const renderCardChatUser = (roomsChat) => {
         return roomsChat.map((roomChat) => {
             return <ChatUser
+                key={roomChat._id}
                 user={roomChat.user}
                 id={roomChat._id}
                 setRoomId={setRoomId}
