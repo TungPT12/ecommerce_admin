@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Chat.module.css';
 import ChatListUser from '../../components/Chat/ChatListUser/ChatListUser';
 import ChatMessage from '../../components/Chat/ChatMessage/ChatMessage';
-import { getRoomChatApi, sendMessageApi } from '../../apis/chat';
+import { destroyRoomChatApi, getRoomChatApi, getRoomsChatApi, sendMessageApi } from '../../apis/chat';
 import { useEffect, useRef, useState } from 'react';
 import { io } from "socket.io-client";
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
@@ -14,8 +14,18 @@ function Chat() {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [roomId, setRoomId] = useState('');
+    const [user, setUser] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingRoomsChat, setIsLoadingRoomsChat] = useState(true);
+    const [roomsChat, setRoomsChat] = useState([]);
 
+    const getRoomsChat = () => {
+        getRoomsChatApi().then((response) => {
+            setRoomsChat(response.data)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
     const sendMessage = (message, roomId) => {
         sendMessageApi(message, roomId).then((response) => {
             setMessage('');
@@ -35,13 +45,28 @@ function Chat() {
         if (roomId) {
             getRoomChatApi(roomId).then((response) => {
                 setMessages(response.data.messages);
-                setIsLoading(false);
+                // setIsLoading(false);
             }).catch((error) => {
-                setIsLoading(false);
                 console.log(error)
             })
         }
+        setIsLoading(false);
     }, [roomId])
+
+    const destroyRoomChat = () => {
+        destroyRoomChatApi(roomId).then((response) => {
+            const newRoomsChat = roomsChat;
+            const position = newRoomsChat.findIndex((roomChat) => {
+                return roomChat._id === roomId;
+            })
+            newRoomsChat.splice(position, 1);
+            setRoomsChat([...newRoomsChat])
+            setRoomId("");
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
 
     // const sendMessage = () => {
     //     const message = inputElement.current.outerText;
@@ -52,6 +77,12 @@ function Chat() {
     //     })
     // };
 
+    useEffect(() => {
+        getRoomsChat();
+        setIsLoadingRoomsChat(false);
+    }, [])
+
+
     return (
         <div className={`${styles['chat']} d-flex flex-column  p-4 `}>
             <div className={`${styles['header-chat']} h-fit-content`}>
@@ -60,14 +91,17 @@ function Chat() {
             </div>
             <div className={`${styles['body-chat']} w-100 d-flex`}>
                 <div className='f-1 h-100 overflow-auto'>
-                    <ChatListUser socket={socket} setRoomId={setRoomId} setIsLoading={setIsLoading} />
+                    {
+                        isLoadingRoomsChat ? <LoadingSpinner /> : <ChatListUser socket={socket} setRoomId={setRoomId} roomsChat={roomsChat} setRoomsChat={setRoomsChat} setUser={setUser} setIsLoading={setIsLoading} />
+
+                    }
                 </div>
                 <div className='f-4 h-100'>
                     <div className={`${styles['wrapper-message']}`}>
                         {
                             isLoading ? <LoadingSpinner /> : (
                                 roomId ? <>
-                                    <ChatMessage messages={messages} />
+                                    <ChatMessage destroyRoomChat={destroyRoomChat} user={user} messages={messages} />
                                     <form onSubmit={(e) => {
                                         e.preventDefault();
                                         sendMessage(message, roomId);

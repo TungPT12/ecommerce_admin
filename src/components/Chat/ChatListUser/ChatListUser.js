@@ -4,28 +4,28 @@ import ChatUser from './ChatUser/ChatUser';
 import { useEffect, useState } from 'react';
 import { getRoomsChatApi } from '../../../apis/chat';
 
-function ChatListUser({ socket, setRoomId, setIsLoading }) {
+function ChatListUser({ socket, setRoomId, roomsChat, setRoomsChat, setIsLoading, setUser }) {
 
-    const [roomsChat, setRoomsChat] = useState([]);
+    // const [roomsChat, setRoomsChat] = useState([]);
 
-    const getRoomsChat = () => {
-        getRoomsChatApi().then((response) => {
-            setRoomsChat(response.data)
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
+    // const getRoomsChat = () => {
+    //     getRoomsChatApi().then((response) => {
+    //         setRoomsChat(response.data)
+    //     }).catch((error) => {
+    //         console.log(error)
+    //     })
+    // }
 
-    useEffect(() => {
-        getRoomsChat();
-    }, []);
+    // useEffect(() => {
+    //     getRoomsChat();
+    // }, []);
 
     useEffect(() => {
         socket.on('newRooms', newRoom => {
             setRoomsChat([...roomsChat, newRoom])
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [roomsChat]);
 
     const renderCardChatUser = (roomsChat) => {
         return roomsChat.map((roomChat) => {
@@ -34,6 +34,7 @@ function ChatListUser({ socket, setRoomId, setIsLoading }) {
                 id={roomChat._id}
                 setRoomId={setRoomId}
                 setIsLoading={setIsLoading}
+                setUser={setUser}
             />
         })
     }

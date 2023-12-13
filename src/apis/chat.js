@@ -31,9 +31,19 @@ const getRoomChatApi = async (roomId) => {
     }
 }
 
+const destroyRoomChatApi = async (roomId) => {
+    try {
+        const response = await axiosInstance.delete(`/room-chat/${roomId}`);
+        return response
+    } catch (error) {
+        return error.response;
+    }
+}
+
 
 export {
     sendMessageApi,
     getRoomsChatApi,
     getRoomChatApi,
+    destroyRoomChatApi,
 }
