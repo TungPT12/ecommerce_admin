@@ -164,24 +164,26 @@ function Chat() {
                         <h4>Chat</h4>
                         <p>apps / chat</p>
                     </div>
-                    <div className='d-flex justify-content-end align-items-center h-100'>
-                        <div className='d-flex h-100 align-items-center'>
-                            <div className={`me-1`}>
-                                <p className={`m-0 ${styles['full-name']} text-end`}>{fullName}</p>
-                                <p className={`m-0 ${styles['email']}`}>{email}</p>
+                    {
+                        isAdmin ? <></> : <div className='d-flex justify-content-end align-items-center h-100'>
+                            <div className='d-flex h-100 align-items-center'>
+                                <div className={`me-1`}>
+                                    <p className={`m-0 ${styles['full-name']} text-end`}>{fullName}</p>
+                                    <p className={`m-0 ${styles['email']}`}>{email}</p>
+                                </div>
+                                <div className='h-50 '>
+                                    <img className={`h-100 ${styles['avatar']}`} src={avatar} alt="" />
+                                </div>
                             </div>
-                            <div className='h-50 '>
-                                <img className={`h-100 ${styles['avatar']}`} src={avatar} alt="" />
-                            </div>
+                            <button onClick={() => {
+                                setIsLoadingSpinnerModal(true);
+                                logout()
+                            }} className={`ms-3 ${styles['logout']}`}>
+                                <FontAwesomeIcon icon={faArrowRightFromBracket} className={`${styles['icon']} f-1`} />
+                                Logout
+                            </button>
                         </div>
-                        <button onClick={() => {
-                            setIsLoadingSpinnerModal(true);
-                            logout()
-                        }} className={`ms-3 ${styles['logout']}`}>
-                            <FontAwesomeIcon icon={faArrowRightFromBracket} className={`${styles['icon']} f-1`} />
-                            Logout
-                        </button>
-                    </div>
+                    }
                 </div>
                 <div className={`${styles['body-chat']} w-100 d-flex`}>
                     <div className='f-1 h-100 overflow-auto'>

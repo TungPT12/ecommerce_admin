@@ -77,7 +77,7 @@ const adminRouters = [
 ]
 
 function App() {
-  const { isAuthn, username, email, avatar, isCounselor, isAdmin } = useSelector(state => state.authn);
+  const { isAuthn, username, email, avatar, isAdmin } = useSelector(state => state.authn);
   const renderRouter = (listRouter) => {
     return listRouter.map((router) => {
       return <Route key={router.path} path={router.path} element={<MainPage>
