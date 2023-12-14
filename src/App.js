@@ -87,8 +87,6 @@ function App() {
     })
   }
 
-  console.log(isAdmin)
-  console.log(isAuthn)
   return (
     <BrowserRouter>
       {isAuthn && isAdmin ? <Header
