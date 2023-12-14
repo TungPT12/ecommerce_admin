@@ -16,7 +16,8 @@ import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinnerModal from '../../components/LoadingSpinnerModal/LoadingSpinnerModal';
 
 function Chat() {
-    const socket = io('http://localhost:5000');
+    const socket = io('https://tungstore.onrender.com');
+    // const socket = io('http://localhost:5000');
     const { avatar, email, fullName, isAuthn, isAdmin } = useSelector(state => state.authn)
     const dispatch = useDispatch();
     const navigate = useNavigate();
