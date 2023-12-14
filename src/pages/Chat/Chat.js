@@ -11,8 +11,9 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { authnAction } from '../../stores/slice/authn';
 import { useNavigate } from 'react-router-dom';
-import { checkIsLoginApi } from '../../apis/authn';
+import { checkIsLoginApi, logoutApi } from '../../apis/authn';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import LoadingSpinnerModal from '../../components/LoadingSpinnerModal/LoadingSpinnerModal';
 
 function Chat() {
     const socket = io('http://localhost:5000');
@@ -26,7 +27,35 @@ function Chat() {
     const [user, setUser] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingRoomsChat, setIsLoadingRoomsChat] = useState(true);
+    const [isLoadingSpinnerModal, setIsLoadingSpinnerModal] = useState(false);
     const [roomsChat, setRoomsChat] = useState([]);
+
+    const logout = () => {
+        logoutApi().then((response) => {
+            if (response.status === 500) {
+                throw new Error('/500');
+            }
+            if (response.status === 400) {
+                throw new Error('/400');
+            }
+            if (response.status === 404) {
+                throw new Error('/404');
+            }
+            if (response.status === 403 || response.status === 401) {
+                throw new Error(response.data.message);
+            }
+            dispatch(authnAction.logout())
+            navigate('/admin/signin')
+        }).catch((error) => {
+            if (error.message === '/500' || error.message === '/400' || error.message === '/404') {
+                navigate(error.message)
+            } else {
+                dispatch(authnAction.logout())
+                navigate('/admin/signin')
+            }
+        })
+
+    }
 
     const getRoomsChat = () => {
         getRoomsChatApi().then((response) => {
@@ -122,61 +151,69 @@ function Chat() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
-        <div style={{
-            height: isAdmin ? "92vh" : "100vh",
-        }} className={`${styles['chat']} d-flex flex-column  p-4 `}>
-            <div className={`${styles['header-chat']} justify-content-between d-flex h-fit-content`}>
-                <div>
-                    <h4>Chat</h4>
-                    <p>apps / chat</p>
-                </div>
-                <div className='d-flex justify-content-end align-items-center h-100'>
-                    <div className='d-flex h-100 align-items-center'>
-                        <div className={`me-1`}>
-                            <p className={`m-0 ${styles['full-name']} text-end`}>{fullName}</p>
-                            <p className={`m-0 ${styles['email']}`}>{email}</p>
-                        </div>
-                        <div className='h-50 '>
-                            <img className={`h-100 ${styles['avatar']}`} src={avatar} alt="" />
-                        </div>
+        <>
+            {
+                isLoadingSpinnerModal ? <LoadingSpinnerModal /> : <></>
+            }
+            <div style={{
+                height: isAdmin ? "92vh" : "100vh",
+            }} className={`${styles['chat']} d-flex flex-column  p-4 `}>
+                <div className={`${styles['header-chat']} justify-content-between d-flex h-fit-content`}>
+                    <div>
+                        <h4>Chat</h4>
+                        <p>apps / chat</p>
                     </div>
-                    <button className={`ms-3 ${styles['logout']}`}>
-                        <FontAwesomeIcon icon={faArrowRightFromBracket} className={`${styles['icon']} f-1`} />
-                        Logout
-                    </button>
+                    <div className='d-flex justify-content-end align-items-center h-100'>
+                        <div className='d-flex h-100 align-items-center'>
+                            <div className={`me-1`}>
+                                <p className={`m-0 ${styles['full-name']} text-end`}>{fullName}</p>
+                                <p className={`m-0 ${styles['email']}`}>{email}</p>
+                            </div>
+                            <div className='h-50 '>
+                                <img className={`h-100 ${styles['avatar']}`} src={avatar} alt="" />
+                            </div>
+                        </div>
+                        <button onClick={() => {
+                            setIsLoadingSpinnerModal(true);
+                            logout()
+                        }} className={`ms-3 ${styles['logout']}`}>
+                            <FontAwesomeIcon icon={faArrowRightFromBracket} className={`${styles['icon']} f-1`} />
+                            Logout
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div className={`${styles['body-chat']} w-100 d-flex`}>
-                <div className='f-1 h-100 overflow-auto'>
-                    {
-                        isLoadingRoomsChat ? <LoadingSpinner /> : <ChatListUser socket={socket} setRoomId={setRoomId} roomsChat={roomsChat} setRoomsChat={setRoomsChat} setUser={setUser} setIsLoading={setIsLoading} />
-
-                    }
-                </div>
-                <div className='f-4 h-100'>
-                    <div className={`${styles['wrapper-message']}`}>
+                <div className={`${styles['body-chat']} w-100 d-flex`}>
+                    <div className='f-1 h-100 overflow-auto'>
                         {
-                            isLoading ? <LoadingSpinner /> : (
-                                roomId ? <>
-                                    <ChatMessage destroyRoomChat={destroyRoomChat} user={user} messages={messages} />
-                                    <form onSubmit={(e) => {
-                                        e.preventDefault();
-                                        sendMessage(message, roomId);
-                                    }} className={`d-flex ${styles['wrapper-input-message']} p-2`}>
-                                        <input placeholder='Type message' className={`${styles['input-message']} ps-2 pe-1 w-100`} value={message} onChange={(e) => {
-                                            setMessage(e.target.value)
-                                        }} />
-                                        <button className={`${styles['send-button']} mx-2`}>
-                                            <FontAwesomeIcon className={`${styles['icon-plane-paper']} text-white`} icon={faPaperPlane} />
-                                        </button>
-                                    </form>
-                                </> : <></>
-                            )
+                            isLoadingRoomsChat ? <LoadingSpinner /> : <ChatListUser socket={socket} setRoomId={setRoomId} roomsChat={roomsChat} setRoomsChat={setRoomsChat} setUser={setUser} setIsLoading={setIsLoading} />
+
                         }
                     </div>
+                    <div className='f-4 h-100'>
+                        <div className={`${styles['wrapper-message']}`}>
+                            {
+                                isLoading ? <LoadingSpinner /> : (
+                                    roomId ? <>
+                                        <ChatMessage destroyRoomChat={destroyRoomChat} user={user} messages={messages} />
+                                        <form onSubmit={(e) => {
+                                            e.preventDefault();
+                                            sendMessage(message, roomId);
+                                        }} className={`d-flex ${styles['wrapper-input-message']} p-2`}>
+                                            <input placeholder='Type message' className={`${styles['input-message']} ps-2 pe-1 w-100`} value={message} onChange={(e) => {
+                                                setMessage(e.target.value)
+                                            }} />
+                                            <button className={`${styles['send-button']} mx-2`}>
+                                                <FontAwesomeIcon className={`${styles['icon-plane-paper']} text-white`} icon={faPaperPlane} />
+                                            </button>
+                                        </form>
+                                    </> : <></>
+                                )
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

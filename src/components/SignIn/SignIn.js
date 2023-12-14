@@ -1,11 +1,14 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './SignIn.module.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { checkIsLoginApi, signin } from '../../apis/authn';
 import { authnAction } from '../../stores/slice/authn';
-function SignIn() {
+import LoadingSpinnerModal from '../LoadingSpinnerModal/LoadingSpinnerModal';
+// import Loading
 
+function SignIn() {
+    const [isLoadingSpinnerModal, setIsLoadingSpinnerModal] = useState(false);
     const { isAuthn } = useSelector(state => state.authn)
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -47,30 +50,8 @@ function SignIn() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthn])
 
-    // const onSubmitLogin = async (e) => {
-    //     try {
-    //         const response = await signin(email, password);
-    //         if (response.status === 401) {
-    //             setIsLoadingSpinnerModal(false);
-    //             setWrongUser(true);
-    //             return;
-    //         }
-    //         if (response.status !== 200) {
-    //             throw new Error(response.data.message);
-    //         }
-    //         const data = response.data;
-    //         dispatch(authnAction.login(data));
-    //         dispatch(cartAction.setCart(data.cart))
-    //         setIsLoadingSpinnerModal(false);
-    //         navigate('/')
-    //     } catch (error) {
-    //         setIsLoadingSpinnerModal(false);
-    //         alert(error.message);
-    //     }
-    // }
-    const onSubmitLogin = async (e) => {
+    const onSubmitLogin = async () => {
         try {
-            e.preventDefault();
             const response = await signin(email, password);
             if (response.status === 401 || response.status === 403) {
                 setWrongUser(true);
@@ -88,23 +69,32 @@ function SignIn() {
     }
 
     return (
-        <div className={`w-fit-content bg-light ${styles['sign-in']}`}>
-            <h3 className={`${styles['title']}`}>Sign In</h3>
-            {wrongUser ? <p>Wrong username or password</p> : <></>}
-            <form onSubmit={onSubmitLogin} className={` d-flex flex-column ${styles['sign-in-form']}`}>
-                <input type='email' placeholder='Email' required value={email}
-                    onChange={(e) => {
-                        setEmail(e.target.value)
-                    }}
+        <>
+            {
+                isLoadingSpinnerModal ? <LoadingSpinnerModal /> : <></>
+            }
+            <div className={`w-fit-content bg-light ${styles['sign-in']}`}>
+                <h3 className={`${styles['title']}`}>Sign In</h3>
+                {wrongUser ? <p>Wrong username or password</p> : <></>}
+                <form onSubmit={((e) => {
+                    e.preventDefault();
+                    setIsLoadingSpinnerModal(true)
+                    onSubmitLogin()
+                })} className={` d-flex flex-column ${styles['sign-in-form']}`}>
+                    <input type='email' placeholder='Email' required value={email}
+                        onChange={(e) => {
+                            setEmail(e.target.value)
+                        }}
 
-                />
-                <input type='password' required placeholder='Password' value={password}
-                    onChange={(e) => {
-                        setPassword(e.target.value)
-                    }} />
-                <button className={`${styles['sign-in_btn']} h-100`}>Sign In</button>
-            </form>
-        </div>
+                    />
+                    <input type='password' required placeholder='Password' value={password}
+                        onChange={(e) => {
+                            setPassword(e.target.value)
+                        }} />
+                    <button className={`${styles['sign-in_btn']} h-100`}>Sign In</button>
+                </form>
+            </div>
+        </>
     );
 }
 

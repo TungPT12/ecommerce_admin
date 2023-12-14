@@ -1,16 +1,7 @@
 import React from 'react';
 import styles from './ChatMessage.module.css'
-import { destroyRoomChatApi } from '../../../apis/chat';
 
 function ChatMessage({ messages, user, destroyRoomChat }) {
-
-    // const destrooyRoomChat = () => {
-    //      destroyRoomChatApi().then((response) => {
-    //         setRoomsChat(response.data)
-    //     }).catch((error) => {
-    //         console.log(error)
-    //     })
-    // }
 
     const renderMessages = (messages) => {
         return messages.map((message) => {
