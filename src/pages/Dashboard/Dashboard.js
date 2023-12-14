@@ -131,13 +131,13 @@ function Dashboard() {
                 <div className={`${styles['image']} text-capitalize f-2  ps-2`}>
                     {order.status ? "chưa thanh toán" : "đã thanh toán"}
                 </div>
-                <div className='f-1 text-capitalize ps-2'>
+                {/* <div className='f-1 text-capitalize ps-2'>
                     <ButtonLink
                         title="view"
                         link={`/admin/order/${order._id}`}
                     />
 
-                </div>
+                </div> */}
             </div>
         })
     }
@@ -190,7 +190,7 @@ function Dashboard() {
                                                 <div className='f-2 text-capitalize ps-2'>total</div>
                                                 <div className='f-2 text-capitalize ps-2'>delivery</div>
                                                 <div className='f-2 text-capitalize ps-2'>status</div>
-                                                <div className='f-1 text-capitalize ps-2 border-0'>detail</div>
+                                                {/* <div className='f-1 text-capitalize ps-2 border-0'>detail</div> */}
                                             </div>
                                         </div>
                                         <div className={`${styles['body-table']}`}>
