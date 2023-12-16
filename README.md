@@ -7,6 +7,9 @@
 ## Link Live
 
 * https://eccomerce-admin.netlify.app
+* account for admin : 
+    - email: boypham12042000@gmail.com
+    - password: 12345678
 
 ## Build Withs
 
