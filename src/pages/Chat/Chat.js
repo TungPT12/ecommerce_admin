@@ -3,7 +3,7 @@ import styles from './Chat.module.css';
 import ChatListUser from '../../components/Chat/ChatListUser/ChatListUser';
 import ChatMessage from '../../components/Chat/ChatMessage/ChatMessage';
 import { destroyRoomChatApi, getRoomChatApi, getRoomsChatApi, sendMessageApi } from '../../apis/chat';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io } from "socket.io-client";
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,8 +16,7 @@ import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinnerModal from '../../components/LoadingSpinnerModal/LoadingSpinnerModal';
 
 function Chat() {
-    const socket = io('https://tungstore.onrender.com');
-    // const socket = io('http://localhost:5000');
+    const socket = io('http://localhost:5000');
     const { avatar, email, fullName, isAuthn, isAdmin } = useSelector(state => state.authn)
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -84,7 +83,6 @@ function Chat() {
         if (roomId) {
             getRoomChatApi(roomId).then((response) => {
                 setMessages(response.data.messages);
-                // setIsLoading(false);
             }).catch((error) => {
                 console.log(error)
             })
@@ -106,15 +104,6 @@ function Chat() {
         })
     }
 
-
-    // const sendMessage = () => {
-    //     const message = inputElement.current.outerText;
-    //     sendMessageApi(message, room).then(() => {
-    //         console.log("object")
-    //     }).catch((error) => {
-    //         console.log(error)
-    //     })
-    // };
     const checkIsLogin = () => {
         checkIsLoginApi().then((response) => {
             if (response.status === 500) {
