@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const uploadImagesApi = async (formData) => {
     try {
-        const response = axios.post('http://localhost:5000/api/upload-images', formData, {
+        // const response = axios.post('http://localhost:5000/api/upload-images', formData, {
+        const response = axios.post('https://tungstore.onrender.com/api/upload-images', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             }
@@ -15,7 +16,7 @@ const uploadImagesApi = async (formData) => {
 
 const uploadAnImagesApi = async (formData) => {
     try {
-        const response = axios.post('http://localhost:5000/api/upload-image', formData, {
+        const response = axios.post('https://tungstore.onrender.com/api/upload-image', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             }
